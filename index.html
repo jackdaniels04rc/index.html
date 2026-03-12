@@ -7,6 +7,517 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
+/* Threat Modal */
+.threat-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    z-index: 20000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.threat-modal.active {
+    display: flex;
+}
+
+.threat-modal-content {
+    background: var(--glass-bg);
+    border: 2px solid var(--primary);
+    border-radius: 25px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 0 50px var(--primary-glow);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.threat-modal-header {
+    padding: 20px 25px;
+    border-bottom: 2px solid var(--primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(0,243,255,0.2), rgba(255,0,229,0.2));
+    border-radius: 23px 23px 0 0;
+}
+
+.threat-modal-header h3 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--primary);
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.threat-modal-close {
+    background: rgba(255, 0, 85, 0.2);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.threat-modal-close:hover {
+    background: var(--danger);
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 0 20px var(--danger);
+}
+
+.threat-modal-body {
+    padding: 25px;
+}
+
+/* Threat Detail Sections */
+.threat-detail-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(0, 243, 255, 0.05);
+    border-radius: 15px;
+    border-left: 4px solid var(--primary);
+}
+
+.threat-detail-title {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--primary);
+    font-size: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.threat-detail-title i {
+    font-size: 18px;
+}
+
+.threat-detail-content {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.threat-detail-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.threat-detail-list li {
+    padding: 8px 0 8px 25px;
+    position: relative;
+    color: var(--text-secondary);
+    font-size: 14px;
+    border-bottom: 1px solid rgba(0, 243, 255, 0.1);
+}
+
+.threat-detail-list li:last-child {
+    border-bottom: none;
+}
+
+.threat-detail-list li:before {
+    content: '•';
+    color: var(--primary);
+    font-size: 20px;
+    position: absolute;
+    left: 5px;
+    top: 2px;
+}
+
+/* MITRE ATT&CK Box */
+.mitre-box {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--primary);
+    border-radius: 12px;
+    padding: 15px;
+    margin: 15px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mitre-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.mitre-badge {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: var(--dark);
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    display: inline-block;
+}
+
+.mitre-tactic {
+    background: rgba(255, 214, 0, 0.2);
+    border: 1px solid var(--warning);
+    color: var(--warning);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+.mitre-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s;
+}
+
+.mitre-link:hover {
+    color: var(--secondary);
+    text-shadow: 0 0 10px var(--secondary-glow);
+}
+
+/* Control Chips */
+.control-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.control-chip {
+    background: rgba(0, 243, 255, 0.1);
+    border: 1px solid var(--primary);
+    border-radius: 20px;
+    padding: 6px 15px;
+    font-size: 12px;
+    color: var(--primary);
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+.control-chip:hover {
+    background: var(--primary);
+    color: var(--dark);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px var(--primary-glow);
+}
+
+/* Severity Badge */
+.severity-badge {
+    display: inline-block;
+    padding: 4px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.severity-critical {
+    background: rgba(255, 0, 85, 0.2);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+}
+
+.severity-high {
+    background: rgba(255, 107, 0, 0.2);
+    border: 1px solid #ff6b00;
+    color: #ff6b00;
+}
+
+.severity-medium {
+    background: rgba(255, 214, 0, 0.2);
+    border: 1px solid var(--warning);
+    color: var(--warning);
+}
+
+.severity-low {
+    background: rgba(0, 255, 157, 0.2);
+    border: 1px solid var(--success);
+    color: var(--success);
+}
+
+/* Risk Heatmap Container */
+.risk-heatmap-container {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 25px;
+    padding: 25px;
+    border: 1px solid var(--card-border);
+    margin-bottom: 25px;
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+}
+
+.heatmap-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.heatmap-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.heatmap-legend {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+}
+
+/* Heatmap Grid */
+.heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.heatmap-card {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    padding: 20px;
+    border: 1px solid var(--card-border);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.heatmap-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 30px currentColor;
+}
+
+.heatmap-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: currentColor;
+    box-shadow: 0 0 20px currentColor;
+}
+
+/* Risk Level Colors */
+.heatmap-card.risk-critical {
+    color: var(--danger);
+    background: linear-gradient(135deg, rgba(255,0,85,0.2), rgba(255,0,85,0.05));
+}
+
+.heatmap-card.risk-high {
+    color: #ff6b00;
+    background: linear-gradient(135deg, rgba(255,107,0,0.2), rgba(255,107,0,0.05));
+}
+
+.heatmap-card.risk-medium {
+    color: var(--warning);
+    background: linear-gradient(135deg, rgba(255,214,0,0.2), rgba(255,214,0,0.05));
+}
+
+.heatmap-card.risk-low {
+    color: var(--success);
+    background: linear-gradient(135deg, rgba(0,255,157,0.2), rgba(0,255,157,0.05));
+}
+
+.heatmap-card.risk-unknown {
+    color: var(--text-secondary);
+    background: linear-gradient(135deg, rgba(150,150,150,0.1), rgba(150,150,150,0.05));
+}
+
+/* Card Content */
+.heatmap-sector {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.heatmap-sector i {
+    font-size: 24px;
+    opacity: 0.8;
+}
+
+.heatmap-stats {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px 0;
+    font-size: 13px;
+}
+
+.heatmap-stat {
+    text-align: center;
+}
+
+.heatmap-stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: currentColor;
+}
+
+.heatmap-stat-label {
+    font-size: 10px;
+    opacity: 0.7;
+    text-transform: uppercase;
+}
+
+.heatmap-risk-score {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.risk-score-value {
+    font-size: 32px;
+    font-weight: 800;
+    font-family: 'Orbitron', sans-serif;
+    color: currentColor;
+}
+
+.risk-score-label {
+    font-size: 11px;
+    opacity: 0.7;
+    line-height: 1.4;
+}
+
+/* Risk Gauge */
+.risk-gauge {
+    margin-top: 20px;
+    padding: 20px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 15px;
+    border: 1px solid var(--card-border);
+}
+
+.gauge-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.gauge-title {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--primary);
+    font-size: 16px;
+}
+
+.gauge-value {
+    font-size: 28px;
+    font-weight: 800;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.gauge-bar {
+    height: 20px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0;
+    display: flex;
+}
+
+.gauge-segment {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.gauge-segment.low { background: var(--success); }
+.gauge-segment.medium { background: var(--warning); }
+.gauge-segment.high { background: #ff6b00; }
+.gauge-segment.critical { background: var(--danger); }
+
+.gauge-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 5px;
+}
+
+/* Trend Indicators */
+.trend-up {
+    color: var(--danger);
+    animation: trendPulse 1s infinite;
+}
+
+.trend-down {
+    color: var(--success);
+}
+
+.trend-stable {
+    color: var(--warning);
+}
+
+@keyframes trendPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .heatmap-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .heatmap-legend {
+        margin-top: 10px;
+    }
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
 
 :root {
@@ -1095,9 +1606,399 @@ body {
     .header { flex-direction: column; gap: 15px; }
     .solution-tooltip { min-width: 280px; }
 }
+
+/* Chatbot Container */
+.chatbot-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 9999;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+/* Chatbot Button */
+.chatbot-button {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: var(--dark);
+    cursor: pointer;
+    box-shadow: 0 0 30px var(--primary-glow);
+    transition: all 0.3s ease;
+    position: relative;
+    animation: buttonPulse 2s infinite;
+}
+
+@keyframes buttonPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 30px var(--primary-glow); }
+    50% { transform: scale(1.1); box-shadow: 0 0 50px var(--primary-glow); }
+}
+
+.chatbot-button:hover {
+    transform: scale(1.15) rotate(5deg);
+}
+
+.chatbot-notification {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 25px;
+    height: 25px;
+    background: var(--danger);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    border: 2px solid var(--dark);
+    animation: notificationPulse 1s infinite;
+}
+
+@keyframes notificationPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+/* Chatbot Window */
+.chatbot-window {
+    position: absolute;
+    bottom: 90px;
+    right: 0;
+    width: 380px;
+    height: 600px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--primary);
+    border-radius: 25px;
+    box-shadow: 0 0 50px var(--primary-glow);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    animation: windowOpen 0.3s ease;
+}
+
+@keyframes windowOpen {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.chatbot-window.active {
+    display: flex;
+}
+
+/* Chatbot Header */
+.chatbot-header {
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(0,243,255,0.2), rgba(255,0,229,0.2));
+    border-bottom: 1px solid var(--primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chatbot-header-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.chatbot-avatar {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--dark);
+    box-shadow: 0 0 20px var(--primary-glow);
+    animation: avatarGlow 2s infinite;
+}
+
+@keyframes avatarGlow {
+    0%, 100% { box-shadow: 0 0 20px var(--primary-glow); }
+    50% { box-shadow: 0 0 40px var(--primary-glow); }
+}
+
+.chatbot-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.chatbot-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--success);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--success);
+    border-radius: 50%;
+    animation: statusPulse 1.5s infinite;
+}
+
+@keyframes statusPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.chatbot-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.chatbot-action {
+    width: 35px;
+    height: 35px;
+    background: rgba(0,243,255,0.1);
+    border: 1px solid var(--primary);
+    border-radius: 10px;
+    color: var(--primary);
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chatbot-action:hover {
+    background: var(--primary);
+    color: var(--dark);
+    transform: scale(1.1);
+    box-shadow: 0 0 20px var(--primary-glow);
+}
+
+/* Chatbot Messages */
+.chatbot-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.message {
+    display: flex;
+    gap: 10px;
+    animation: messageSlide 0.3s ease;
+}
+
+@keyframes messageSlide {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.message.bot-message {
+    align-self: flex-start;
+}
+
+.message.user-message {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.message-avatar {
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: var(--dark);
+    flex-shrink: 0;
+}
+
+.user-message .message-avatar {
+    background: linear-gradient(135deg, var(--success), var(--primary));
+}
+
+.message-content {
+    max-width: 250px;
+    background: rgba(0,243,255,0.1);
+    border: 1px solid var(--primary);
+    border-radius: 15px;
+    padding: 12px;
+    position: relative;
+}
+
+.user-message .message-content {
+    background: rgba(255,0,229,0.1);
+    border-color: var(--secondary);
+}
+
+.message-sender {
+    font-size: 11px;
+    color: var(--primary);
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.user-message .message-sender {
+    color: var(--secondary);
+}
+
+.message-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-primary);
+    word-wrap: break-word;
+}
+
+.message-time {
+    font-size: 10px;
+    color: var(--text-secondary);
+    margin-top: 5px;
+    text-align: right;
+}
+
+/* Chatbot Suggestions */
+.chatbot-suggestions {
+    padding: 15px;
+    border-top: 1px solid rgba(0,243,255,0.2);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.suggestion-chip {
+    padding: 8px 15px;
+    background: rgba(0,243,255,0.1);
+    border: 1px solid var(--primary);
+    border-radius: 20px;
+    color: var(--primary);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+.suggestion-chip:hover {
+    background: var(--primary);
+    color: var(--dark);
+    transform: scale(1.05);
+    box-shadow: 0 0 20px var(--primary-glow);
+}
+
+/* Chatbot Input */
+.chatbot-input {
+    padding: 15px;
+    background: rgba(0,0,0,0.3);
+    border-top: 1px solid var(--primary);
+    display: flex;
+    gap: 10px;
+}
+
+.chatbot-input input {
+    flex: 1;
+    background: rgba(0,243,255,0.1);
+    border: 1px solid var(--primary);
+    border-radius: 15px;
+    padding: 12px 15px;
+    color: white;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.chatbot-input input:focus {
+    outline: none;
+    box-shadow: 0 0 20px var(--primary-glow);
+    background: rgba(0,243,255,0.2);
+}
+
+.chatbot-input input::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+.chatbot-send {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border: none;
+    border-radius: 15px;
+    color: var(--dark);
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.chatbot-send:hover {
+    transform: scale(1.1) rotate(15deg);
+    box-shadow: 0 0 30px var(--primary-glow);
+}
+
+/* Loading Animation */
+.typing-indicator {
+    display: flex;
+    gap: 5px;
+    padding: 10px;
+}
+
+.typing-indicator span {
+    width: 8px;
+    height: 8px;
+    background: var(--primary);
+    border-radius: 50%;
+    animation: typing 1s infinite;
+}
+
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing {
+    0%, 100% { transform: translateY(0); opacity: 0.3; }
+    50% { transform: translateY(-5px); opacity: 1; }
+}
+
+/* Chatbot Scrollbar */
+.chatbot-messages::-webkit-scrollbar {
+    width: 5px;
+}
+
+.chatbot-messages::-webkit-scrollbar-track {
+    background: rgba(0,243,255,0.1);
+}
+
+.chatbot-messages::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 5px;
+}
 </style>
 </head>
 <body>
+
+<!-- Threat Modal -->
+<div class="threat-modal" id="threatModal">
+    <div class="threat-modal-content">
+        <div class="threat-modal-header">
+            <h3><i class="fas fa-biohazard"></i> <span id="modalThreatTitle">Təhdid Məlumatı</span></h3>
+            <button class="threat-modal-close" onclick="closeThreatModal()">&times;</button>
+        </div>
+        <div class="threat-modal-body" id="threatModalBody">
+            <!-- Dynamic content will be loaded here -->
+        </div>
+    </div>
+</div>
 
 <div class="cyber-background">
     <div class="cyber-grid"></div>
@@ -1178,6 +2079,9 @@ body {
             <div class="kpi-label">COMPLIANCE RATE</div>
         </div>
     </div>
+
+    <!-- Risk Heatmap -->
+    <div id="riskHeatmapContainer"></div>
 
     <!-- Main Grid -->
     <div class="main-grid">
@@ -1347,8 +2251,69 @@ body {
     </div>
 </div>
 
+<!-- Təhlükəsizlik Məsləhətçi Chatbotu -->
+<div class="chatbot-container" id="chatbotContainer">
+    <div class="chatbot-button" id="chatbotButton">
+        <i class="fas fa-shield-halded"></i>
+        <span class="chatbot-notification">1</span>
+    </div>
+    
+    <div class="chatbot-window" id="chatbotWindow">
+        <div class="chatbot-header">
+            <div class="chatbot-header-info">
+                <div class="chatbot-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div>
+                    <div class="chatbot-title">Security Assistant</div>
+                    <div class="chatbot-status">
+                        <span class="status-dot"></span> AI Online
+                    </div>
+                </div>
+            </div>
+            <div class="chatbot-actions">
+                <button class="chatbot-action" onclick="clearChat()">
+                    <i class="fas fa-rotate-right"></i>
+                </button>
+                <button class="chatbot-action" onclick="toggleChatbot()">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="chatbot-messages" id="chatbotMessages">
+            <div class="message bot-message">
+                <div class="message-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-content">
+                    <div class="message-sender">Security Assistant</div>
+                    <div class="message-text">
+                        Salam! Mən təhlükəsizlik məsləhətçinizəm. Kontrollar, standartlar və ya təhlükəsizlik tövsiyələri barədə sual verə bilərsiniz.
+                    </div>
+                    <div class="message-time">İndi</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chatbot-suggestions" id="chatbotSuggestions">
+            <button class="suggestion-chip" onclick="askQuestion('GOV-001 nədir?')">GOV-001 nədir?</button>
+            <button class="suggestion-chip" onclick="askQuestion('Ransomware-dən qorunmaq?')">Ransomware-dən qorunmaq?</button>
+            <button class="suggestion-chip" onclick="askQuestion('ISO 27001 nə tələb edir?')">ISO 27001 nə tələb edir?</button>
+            <button class="suggestion-chip" onclick="askQuestion('Təcili yardım')">🚨 Təcili yardım</button>
+        </div>
+        
+        <div class="chatbot-input">
+            <input type="text" id="chatbotInput" placeholder="Sualınızı yazın..." onkeypress="handleKeyPress(event)">
+            <button class="chatbot-send" onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
-// Complete Solution Database with precise references - HİSSƏ 1
+// Complete Solution Database with precise references
 const solutions = {
     // Government controls - GOV-001 to GOV-035
     'GOV-001': { 
@@ -1391,7 +2356,6 @@ const solutions = {
         solution: 'Install enterprise antivirus/EDR solution on all endpoints. Configure automatic updates and regular scans. Block malicious processes immediately.',
         ref: 'ISO 27001:2022 A.8.8 (Malware Protection), NIST SP 800-53 Rev5 SI-3 (Malicious Code Protection)'
     },
-
     'GOV-011': { 
         solution: 'Implement RBAC with least privilege principle. Review access rights quarterly and remove orphaned accounts. Use privileged access management for admin accounts.',
         ref: 'ISO 27001:2022 A.5.15 (Access Control), A.5.18 (Access Rights), NIST SP 800-53 Rev5 AC-2 (Account Management)'
@@ -2860,7 +3824,6 @@ const solutions = {
     }
 };
 
-
 // Kritik İnfrastruktur məlumatları
 const infrastructures = [
     { id: 'government', name: 'GOVERNMENT', icon: 'fa-landmark', sector: 'Public', framework: 'ISO 27001:2022, NIST SP 800-53 Rev5' },
@@ -2875,6 +3838,150 @@ const infrastructures = [
     { id: 'ecology', name: 'ECOLOGY', icon: 'fa-leaf', sector: 'Environment', framework: 'ISO 14001, EPA 40 CFR, UNFCCC' },
     { id: 'private', name: 'PRIVATE SECTOR', icon: 'fa-building', sector: 'Private', framework: 'ISO 27001:2022, NIST CSF, GDPR' }
 ];
+
+// MITRE ATT&CK Framework məlumatları
+const mitreAttackData = {
+    'Ransomware Attack': {
+        techniqueId: 'T1486',
+        techniqueName: 'Data Encrypted for Impact',
+        tactic: 'Impact',
+        description: 'Adversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources.',
+        mitigation: 'Implement regular backups (GOV-008), endpoint detection and response (IT-013), and user training (PVT-018).',
+        url: 'https://attack.mitre.org/techniques/T1486/'
+    },
+    'Data Breach Attempt': {
+        techniqueId: 'T1530',
+        techniqueName: 'Data from Cloud Storage Object',
+        tactic: 'Collection',
+        description: 'Adversaries may access data objects from improperly secured cloud storage.',
+        mitigation: 'Implement cloud security controls (GOV-034), data classification (GOV-019), and DLP solutions (PVT-023).',
+        url: 'https://attack.mitre.org/techniques/T1530/'
+    },
+    'Unauthorized Access': {
+        techniqueId: 'T1078',
+        techniqueName: 'Valid Accounts',
+        tactic: 'Defense Evasion, Persistence, Privilege Escalation, Initial Access',
+        description: 'Adversaries may steal or obtain valid credentials to gain access to systems.',
+        mitigation: 'Implement MFA (GOV-012), privileged access management (IT-012), and regular access reviews (GOV-011).',
+        url: 'https://attack.mitre.org/techniques/T1078/'
+    },
+    'DDoS Attack': {
+        techniqueId: 'T1498',
+        techniqueName: 'Network Denial of Service',
+        tactic: 'Impact',
+        description: 'Adversaries may perform Network Denial of Service (DoS) attacks to degrade or block the availability of targeted resources.',
+        mitigation: 'Deploy DDoS protection services, rate limiting, and redundant network infrastructure (IT-002).',
+        url: 'https://attack.mitre.org/techniques/T1498/'
+    },
+    'Malware Infection': {
+        techniqueId: 'T1204',
+        techniqueName: 'User Execution',
+        tactic: 'Execution',
+        description: 'An adversary may rely upon a user to execute a malicious file to gain access.',
+        mitigation: 'Endpoint protection (IT-013), application whitelisting, and security awareness training (PVT-018).',
+        url: 'https://attack.mitre.org/techniques/T1204/'
+    },
+    'Phishing Campaign': {
+        techniqueId: 'T1566',
+        techniqueName: 'Phishing',
+        tactic: 'Initial Access',
+        description: 'Adversaries may send phishing messages to gain access to victim systems.',
+        mitigation: 'Email security (IT-014), MFA (GOV-012), and security awareness training (PVT-018).',
+        url: 'https://attack.mitre.org/techniques/T1566/'
+    },
+    'Port Scanning': {
+        techniqueId: 'T1046',
+        techniqueName: 'Network Service Scanning',
+        tactic: 'Discovery',
+        description: 'Adversaries may scan networks for open ports and vulnerable services.',
+        mitigation: 'Network segmentation (GOV-009), firewalls (IT-018), and intrusion detection systems (IT-002).',
+        url: 'https://attack.mitre.org/techniques/T1046/'
+    },
+    'Policy Violation': {
+        techniqueId: 'T1078.003',
+        techniqueName: 'Local Accounts',
+        tactic: 'Persistence',
+        description: 'Adversaries may use local accounts to maintain access.',
+        mitigation: 'Access reviews (GOV-011), privileged access management (IT-012), and audit logging (PVT-025).',
+        url: 'https://attack.mitre.org/techniques/T1078/003/'
+    }
+};
+
+// Ətraflı təhdid məlumatları
+const threatIntelligence = {
+    'Ransomware Attack': {
+        description: 'Ransomware kritik faylları şifrələyir və deşifrə üçün fidyə tələb edir. Müasir ransomware qrupları məlumatları oğurlayaraq ikiqat şantaj edir.',
+        indicators: [
+            'Fayl adlarının dəyişməsi (.encrypted, .locked)',
+            'Fidyə qeydləri (README.txt, HOW_TO_DECRYPT.html)',
+            'Yüksək disk aktivliyi',
+            'Şifrələmə prosesi zamanı CPU artımı'
+        ],
+        affectedSystems: ['Fayl serverləri', 'İstifadəçi iş stansiyaları', 'Backup sistemləri'],
+        firstActions: [
+            'Təsirlənmiş sistemləri şəbəkədən ayırın',
+            'SOC komandasını xəbərdar edin',
+            'Backup-ları yoxlayın',
+            'Fidyə ÖDƏMƏYİN'
+        ],
+        recommendedControls: ['IT-013 (Endpoint Security)', 'GOV-008 (Backup)', 'PVT-018 (Training)', 'GOV-013 (Incident Response)'],
+        mitreRef: 'T1486 - Data Encrypted for Impact'
+    },
+    'Data Breach Attempt': {
+        description: 'Məlumat sızması cəhdi - həssas məlumatlara icazəsiz giriş və ya onların xaricə ötürülməsi.',
+        indicators: [
+            'Qeyri-adi həcmdə xaricə gedən trafik',
+            'Həssas fayllara kütləvi giriş',
+            'Qeyri-adi vaxtlarda məlumat girişi',
+            'Bilinməyən xarici IP-lərə bağlantılar'
+        ],
+        affectedSystems: ['Databases', 'File shares', 'Cloud storage', 'Email systems'],
+        firstActions: [
+            'Şübhəli bağlantıları bloklayın',
+            'Təsirlənmiş hesabları deaktiv edin',
+            'Log-ları analiz üçün toplayın',
+            'DLP alert-lərini yoxlayın'
+        ],
+        recommendedControls: ['PVT-023 (DLP)', 'GOV-019 (Data Classification)', 'PVT-025 (Audit Logs)', 'GOV-002 (Document Management)'],
+        mitreRef: 'T1530 - Data from Cloud Storage Object'
+    },
+    'Unauthorized Access': {
+        description: 'İcazəsiz giriş cəhdi - kimsə etibarnamələri ələ keçirərək sistemə daxil olmağa çalışır.',
+        indicators: [
+            'Çoxsaylı uğursuz login cəhdləri',
+            'Qeyri-adi vaxtlarda login',
+            'Coğrafi cəhətdən qeyri-adi lokasiyalardan giriş',
+            'Privileged account istifadəsi'
+        ],
+        affectedSystems: ['Domain controllers', 'Critical servers', 'Admin workstations'],
+        firstActions: [
+            'Şübhəli hesabı bloklayın',
+            'MFA-nı məcburi edin',
+            'Şifrəni sıfırlayın',
+            'Session-ləri sonlandırın'
+        ],
+        recommendedControls: ['GOV-012 (MFA)', 'IT-012 (PAM)', 'GOV-011 (RBAC)', 'GOV-017 (Remote Access)'],
+        mitreRef: 'T1078 - Valid Accounts'
+    },
+    'DDoS Attack': {
+        description: 'Paylanmış xidmət əngəlləmə hücumu - resursları şişirdərək xidməti əlçatmaz etmə.',
+        indicators: [
+            'Anormal yüksək trafik',
+            'Xidmət gecikmələri',
+            'Zəif bağlantılar',
+            'CPU/RAM yüksək istifadəsi'
+        ],
+        affectedSystems: ['Web servers', 'DNS servers', 'Firewalls', 'Load balancers'],
+        firstActions: [
+            'DDoS mitigation servisini aktivləşdirin',
+            'Rate limiting tətbiq edin',
+            'Blackhole routing',
+            'ISP-ni xəbərdar edin'
+        ],
+        recommendedControls: ['IT-002 (Network Security)', 'IT-017 (Load Balancer)', 'IT-018 (Firewall)', 'GOV-009 (Network Security)'],
+        mitreRef: 'T1498 - Network Denial of Service'
+    }
+};
 
 // Kontrollar (bütün sektorlar üçün 35+ kontrol) - 400+ kontrol
 const infrastructureControls = {
@@ -3272,6 +4379,244 @@ const infrastructureControls = {
     ]
 };
 
+// Risk Heatmap məlumatları
+let riskHeatmapData = {};
+
+// Risk hesablama funksiyası
+function calculateRiskScore(infraId) {
+    const controls = infrastructureControls[infraId] || [];
+    let totalRisk = 0;
+    let totalControls = 0;
+    let criticalCount = 0, highCount = 0, mediumCount = 0, lowCount = 0;
+    
+    // Cari seçilmiş infrastrukturun kontrollarını yoxla
+    const rows = document.querySelectorAll('#controlsTable tbody tr');
+    
+    rows.forEach(row => {
+        const risk = row.cells[5]?.querySelector('select')?.value;
+        const status = row.cells[4]?.querySelector('select')?.value;
+        
+        if (risk && status !== 'na') {
+            totalControls++;
+            
+            // Risk balları: critical=100, high=70, medium=40, low=10
+            let riskPoint = 0;
+            switch(risk) {
+                case 'critical': riskPoint = 100; criticalCount++; break;
+                case 'high': riskPoint = 70; highCount++; break;
+                case 'medium': riskPoint = 40; mediumCount++; break;
+                case 'low': riskPoint = 10; lowCount++; break;
+            }
+            
+            // Status faktor: no=1, partial=0.7, yes=0.3
+            let statusFactor = 1;
+            switch(status) {
+                case 'yes': statusFactor = 0.3; break;
+                case 'partial': statusFactor = 0.7; break;
+                case 'no': statusFactor = 1; break;
+            }
+            
+            totalRisk += riskPoint * statusFactor;
+        }
+    });
+    
+    const avgRisk = totalControls > 0 ? Math.round(totalRisk / totalControls) : 0;
+    
+    return {
+        score: avgRisk,
+        critical: criticalCount,
+        high: highCount,
+        medium: mediumCount,
+        low: lowCount,
+        total: totalControls
+    };
+}
+
+// Bütün infrastrukturların riskini hesabla
+function calculateAllRisks() {
+    infrastructures.forEach(infra => {
+        // Simulyasiya: hər infrastruktur üçün təsadüfi risk
+        // Əslində burada hər bir infrastrukturun öz kontrolları olmalıdır
+        const randomScore = Math.floor(Math.random() * 100);
+        let riskLevel = 'low';
+        if (randomScore >= 80) riskLevel = 'critical';
+        else if (randomScore >= 60) riskLevel = 'high';
+        else if (randomScore >= 30) riskLevel = 'medium';
+        
+        riskHeatmapData[infra.id] = {
+            score: randomScore,
+            level: riskLevel,
+            trend: ['up', 'down', 'stable'][Math.floor(Math.random() * 3)],
+            critical: Math.floor(Math.random() * 5),
+            high: Math.floor(Math.random() * 8),
+            medium: Math.floor(Math.random() * 12),
+            low: Math.floor(Math.random() * 20)
+        };
+    });
+    
+    // Cari seçilmiş infrastrukturun real məlumatlarını yaz
+    const currentInfra = document.getElementById('selectedInfrastructure').textContent.toLowerCase();
+    const currentRisk = calculateRiskScore(currentInfra);
+    
+    if (currentRisk.total > 0) {
+        riskHeatmapData[currentInfra] = {
+            score: currentRisk.score,
+            level: currentRisk.score >= 80 ? 'critical' : 
+                   currentRisk.score >= 60 ? 'high' : 
+                   currentRisk.score >= 30 ? 'medium' : 'low',
+            trend: 'stable',
+            critical: currentRisk.critical,
+            high: currentRisk.high,
+            medium: currentRisk.medium,
+            low: currentRisk.low
+        };
+    }
+}
+
+// Risk Heatmap-i render et
+function renderRiskHeatmap() {
+    calculateAllRisks();
+    
+    const container = document.getElementById('riskHeatmapContainer');
+    if (!container) return;
+    
+    let html = `
+        <div class="risk-heatmap-container">
+            <div class="heatmap-header">
+                <div class="heatmap-title">
+                    <i class="fas fa-fire"></i> RISK HEATMAP
+                </div>
+                <div class="heatmap-legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--danger);"></div>
+                        <span>Critical (80-100)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ff6b00;"></div>
+                        <span>High (60-79)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--warning);"></div>
+                        <span>Medium (30-59)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--success);"></div>
+                        <span>Low (0-29)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="heatmap-grid">
+    `;
+    
+    infrastructures.forEach(infra => {
+        const risk = riskHeatmapData[infra.id] || { score: 0, level: 'unknown', trend: 'stable', critical: 0, high: 0, medium: 0, low: 0 };
+        const riskClass = `risk-${risk.level}`;
+        const trendIcon = risk.trend === 'up' ? 'fa-arrow-up trend-up' : 
+                         risk.trend === 'down' ? 'fa-arrow-down trend-down' : 'fa-minus trend-stable';
+        
+        html += `
+            <div class="heatmap-card ${riskClass}" onclick="selectInfrastructure('${infra.id}')">
+                <div class="heatmap-sector">
+                    <span>${infra.name}</span>
+                    <i class="fas ${infra.icon}"></i>
+                </div>
+                
+                <div class="heatmap-stats">
+                    <div class="heatmap-stat">
+                        <div class="heatmap-stat-value" style="color: var(--danger);">${risk.critical}</div>
+                        <div class="heatmap-stat-label">Critical</div>
+                    </div>
+                    <div class="heatmap-stat">
+                        <div class="heatmap-stat-value" style="color: #ff6b00;">${risk.high}</div>
+                        <div class="heatmap-stat-label">High</div>
+                    </div>
+                    <div class="heatmap-stat">
+                        <div class="heatmap-stat-value" style="color: var(--warning);">${risk.medium}</div>
+                        <div class="heatmap-stat-label">Medium</div>
+                    </div>
+                    <div class="heatmap-stat">
+                        <div class="heatmap-stat-value" style="color: var(--success);">${risk.low}</div>
+                        <div class="heatmap-stat-label">Low</div>
+                    </div>
+                </div>
+                
+                <div class="heatmap-risk-score">
+                    <div class="risk-score-value">${risk.score}</div>
+                    <div class="risk-score-label">
+                        RISK SCORE
+                        <br>
+                        <small><i class="fas ${trendIcon}"></i> ${risk.trend === 'up' ? 'Artan' : risk.trend === 'down' ? 'Azalan' : 'Sabit'}</small>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    // Ümumi risk göstəricisi (Gauge)
+    const totalCritical = Object.values(riskHeatmapData).reduce((sum, r) => sum + r.critical, 0);
+    const totalHigh = Object.values(riskHeatmapData).reduce((sum, r) => sum + r.high, 0);
+    const totalMedium = Object.values(riskHeatmapData).reduce((sum, r) => sum + r.medium, 0);
+    const totalLow = Object.values(riskHeatmapData).reduce((sum, r) => sum + r.low, 0);
+    const total = totalCritical + totalHigh + totalMedium + totalLow;
+    
+    const criticalPercent = total > 0 ? (totalCritical / total * 100) : 0;
+    const highPercent = total > 0 ? (totalHigh / total * 100) : 0;
+    const mediumPercent = total > 0 ? (totalMedium / total * 100) : 0;
+    const lowPercent = total > 0 ? (totalLow / total * 100) : 0;
+    
+    html += `
+            </div>
+            
+            <div class="risk-gauge">
+                <div class="gauge-header">
+                    <div class="gauge-title">Ümumi Risk Paylanması</div>
+                    <div class="gauge-value" style="color: ${totalCritical > 0 ? 'var(--danger)' : totalHigh > 0 ? '#ff6b00' : 'var(--success)'}">
+                        ${totalCritical > 0 ? 'KRİTİK' : totalHigh > 0 ? 'YÜKSƏK' : 'NORMAL'}
+                    </div>
+                </div>
+                
+                <div class="gauge-bar">
+                    <div class="gauge-segment low" style="width: ${lowPercent}%;"></div>
+                    <div class="gauge-segment medium" style="width: ${mediumPercent}%;"></div>
+                    <div class="gauge-segment high" style="width: ${highPercent}%;"></div>
+                    <div class="gauge-segment critical" style="width: ${criticalPercent}%;"></div>
+                </div>
+                
+                <div class="gauge-labels">
+                    <span>🟢 Low (${Math.round(lowPercent)}%)</span>
+                    <span>🟡 Medium (${Math.round(mediumPercent)}%)</span>
+                    <span>🟠 High (${Math.round(highPercent)}%)</span>
+                    <span>🔴 Critical (${Math.round(criticalPercent)}%)</span>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.innerHTML = html;
+}
+
+// Risk Heatmap-i yenilə (status dəyişəndə)
+function updateRiskHeatmap() {
+    const currentInfra = document.getElementById('selectedInfrastructure').textContent.toLowerCase();
+    const currentRisk = calculateRiskScore(currentInfra);
+    
+    if (currentRisk.total > 0) {
+        riskHeatmapData[currentInfra] = {
+            score: currentRisk.score,
+            level: currentRisk.score >= 80 ? 'critical' : 
+                   currentRisk.score >= 60 ? 'high' : 
+                   currentRisk.score >= 30 ? 'medium' : 'low',
+            trend: 'stable',
+            critical: currentRisk.critical,
+            high: currentRisk.high,
+            medium: currentRisk.medium,
+            low: currentRisk.low
+        };
+    }
+    
+    renderRiskHeatmap();
+}
 
 // Tooltip handling - CLICK version
 let activeTooltip = null;
@@ -3401,7 +4746,9 @@ function renderInfrastructureCards() {
     grid.innerHTML = html;
     
     // First card active by default
-    document.querySelector('.infrastructure-card').classList.add('active');
+    setTimeout(() => {
+        document.querySelector('.infrastructure-card').classList.add('active');
+    }, 100);
 }
 
 // Select infrastructure
@@ -3410,7 +4757,14 @@ function selectInfrastructure(infraId) {
     document.querySelectorAll('.infrastructure-card').forEach(card => {
         card.classList.remove('active');
     });
-    event.currentTarget.classList.add('active');
+    
+    // Find and activate the clicked card
+    const cards = document.querySelectorAll('.infrastructure-card');
+    cards.forEach(card => {
+        if (card.querySelector('.card-title').textContent === infrastructures.find(i => i.id === infraId).name) {
+            card.classList.add('active');
+        }
+    });
     
     // Update title and framework
     const infra = infrastructures.find(i => i.id === infraId);
@@ -3422,6 +4776,11 @@ function selectInfrastructure(infraId) {
     
     // Reset all statistics to 0
     resetStatistics();
+    
+    // Risk Heatmap-i yenilə
+    if (typeof updateRiskHeatmap === 'function') {
+        setTimeout(updateRiskHeatmap, 100);
+    }
 }
 
 // Render controls - MODIFIED for CLICK tooltip
@@ -3534,9 +4893,167 @@ function updateStatistics() {
     
     updateThreatList(critical, high, medium, low);
     updateGlobalThreatLevel(critical, high);
+    
+    // Risk Heatmap-i yenilə
+    if (typeof updateRiskHeatmap === 'function') {
+        updateRiskHeatmap();
+    }
 }
 
-// Update threat list with different types
+// Threat modalını aç
+function showThreatDetails(threatType, severity) {
+    const threat = threatIntelligence[threatType];
+    const mitre = mitreAttackData[threatType];
+    
+    if (!threat) return;
+    
+    const modalBody = document.getElementById('threatModalBody');
+    const modalTitle = document.getElementById('modalThreatTitle');
+    
+    modalTitle.textContent = threatType;
+    
+    // Severity class
+    const severityClass = severity === 'critical' ? 'severity-critical' : 
+                         severity === 'high' ? 'severity-high' : 
+                         severity === 'medium' ? 'severity-medium' : 'severity-low';
+    
+    // Control chips
+    const controlChips = threat.recommendedControls.map(control => 
+        `<span class="control-chip" onclick="showSolutionClick(event, '${control.split(' ')[0]}')">${control}</span>`
+    ).join('');
+    
+    // MITRE info
+    const mitreHTML = mitre ? `
+        <div class="mitre-box">
+            <div class="mitre-row">
+                <span class="mitre-badge">MITRE ATT&CK</span>
+                <span class="mitre-tactic">${mitre.tactic}</span>
+            </div>
+            <div class="mitre-row">
+                <strong style="color: var(--primary);">${mitre.techniqueId}:</strong>
+                <span style="color: var(--text-secondary);">${mitre.techniqueName}</span>
+            </div>
+            <div style="color: var(--text-secondary); font-size: 13px; margin-top: 5px;">
+                ${mitre.description}
+            </div>
+            <div style="margin-top: 10px;">
+                <a href="${mitre.url}" target="_blank" class="mitre-link">
+                    <i class="fas fa-external-link-alt"></i> MITRE ATT&CK-də bax
+                </a>
+            </div>
+        </div>
+    ` : '';
+    
+    const html = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <span class="severity-badge ${severityClass}">${severity.toUpperCase()} SEVERITY</span>
+        </div>
+        
+        ${mitreHTML}
+        
+        <div class="threat-detail-section">
+            <div class="threat-detail-title">
+                <i class="fas fa-info-circle"></i> Təhdid Haqqında
+            </div>
+            <div class="threat-detail-content">
+                ${threat.description}
+            </div>
+        </div>
+        
+        <div class="threat-detail-section">
+            <div class="threat-detail-title">
+                <i class="fas fa-exclamation-triangle"></i> Göstəricilər (Indicators)
+            </div>
+            <ul class="threat-detail-list">
+                ${threat.indicators.map(ind => `<li>${ind}</li>`).join('')}
+            </ul>
+        </div>
+        
+        <div class="threat-detail-section">
+            <div class="threat-detail-title">
+                <i class="fas fa-desktop"></i> Təsir Edə Biləcək Sistemlər
+            </div>
+            <ul class="threat-detail-list">
+                ${threat.affectedSystems.map(sys => `<li>${sys}</li>`).join('')}
+            </ul>
+        </div>
+        
+        <div class="threat-detail-section" style="border-left-color: var(--success);">
+            <div class="threat-detail-title">
+                <i class="fas fa-first-aid"></i> İlk Təcili Tədbirlər
+            </div>
+            <ul class="threat-detail-list">
+                ${threat.firstActions.map(action => `<li>${action}</li>`).join('')}
+            </ul>
+        </div>
+        
+        <div class="threat-detail-section">
+            <div class="threat-detail-title">
+                <i class="fas fa-shield-alt"></i> Tövsiyə Olunan Kontrollar
+            </div>
+            <div class="control-chips">
+                ${controlChips}
+            </div>
+        </div>
+        
+        <div class="threat-detail-section">
+            <div class="threat-detail-title">
+                <i class="fas fa-book"></i> Əlaqəli Standartlar
+            </div>
+            <div style="color: var(--text-secondary); font-size: 13px;">
+                <p><strong>NIST CSF:</strong> ${getNISTMapping(threatType)}</p>
+                <p><strong>ISO 27001:</strong> ${getISOMapping(threatType)}</p>
+            </div>
+        </div>
+    `;
+    
+    modalBody.innerHTML = html;
+    document.getElementById('threatModal').classList.add('active');
+}
+
+// NIST CSF mapping
+function getNISTMapping(threatType) {
+    const mappings = {
+        'Ransomware Attack': 'PR.DS-1 (Data-at-rest protection), DE.CM-4 (Malicious code detection)',
+        'Data Breach Attempt': 'PR.DS-5 (Protection against data leaks), DE.AE-2 (Event analysis)',
+        'Unauthorized Access': 'PR.AC-1 (Identity management), PR.AC-4 (Access permissions)',
+        'DDoS Attack': 'PR.DS-6 (Availability), DE.CM-1 (Network monitoring)',
+        'Malware Infection': 'PR.IP-1 (Configuration management), DE.CM-4 (Malicious code)',
+        'Phishing Campaign': 'PR.AT-1 (Awareness training), DE.CM-2 (Monitoring)',
+        'Port Scanning': 'PR.AC-5 (Network segmentation), DE.CM-1 (Network monitoring)',
+        'Policy Violation': 'PR.IP-11 (Compliance), DE.AE-3 (Event correlation)'
+    };
+    return mappings[threatType] || 'PR.IP-1 (Configuration management), DE.CM-1 (Network monitoring)';
+}
+
+// ISO 27001 mapping
+function getISOMapping(threatType) {
+    const mappings = {
+        'Ransomware Attack': 'A.8.8 (Malware protection), A.8.13 (Backup)',
+        'Data Breach Attempt': 'A.8.10 (Data protection), A.8.11 (DLP)',
+        'Unauthorized Access': 'A.5.15 (Access control), A.5.17 (Authentication)',
+        'DDoS Attack': 'A.8.20 (Network security), A.8.21 (Segregation)',
+        'Malware Infection': 'A.8.8 (Malware protection), A.6.3 (Awareness)',
+        'Phishing Campaign': 'A.6.3 (Awareness), A.8.11 (Email security)',
+        'Port Scanning': 'A.8.20 (Network security), A.8.16 (Monitoring)',
+        'Policy Violation': 'A.5.1 (Policy), A.5.15 (Access control)'
+    };
+    return mappings[threatType] || 'A.8.8 (Vulnerability management), A.8.16 (Monitoring)';
+}
+
+// Modalı bağla
+function closeThreatModal() {
+    document.getElementById('threatModal').classList.remove('active');
+}
+
+// ESC düyməsi ilə modalı bağla
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeThreatModal();
+    }
+});
+
+// Update threat list with different types (MODIFIED - with click handler)
 function updateThreatList(critical, high, medium, low) {
     const threatList = document.getElementById('threatList');
     let html = '';
@@ -3559,7 +5076,7 @@ function updateThreatList(critical, high, medium, low) {
                 if (threatIndex < 5) {
                     const timeAgo = ['5 min ago', '15 min ago', '30 min ago', '1 hour ago', '2 hours ago'][threatIndex];
                     html += `
-                        <div class="threat-item">
+                        <div class="threat-item" onclick="showThreatDetails('${threat.type}', '${threat.severity}')">
                             <div class="threat-level-indicator threat-${threat.severity}-indicator"></div>
                             <div class="threat-content">
                                 <div class="threat-title"><i class="fas ${threat.icon}"></i> ${threat.type}</div>
@@ -4019,11 +5536,411 @@ function downloadPDF() {
     closePDF();
 }
 
+// Chatbot state
+let isChatbotOpen = false;
+
+// Toggle chatbot window
+function toggleChatbot() {
+    const window = document.getElementById('chatbotWindow');
+    const button = document.getElementById('chatbotButton');
+    
+    isChatbotOpen = !isChatbotOpen;
+    
+    if (isChatbotOpen) {
+        window.classList.add('active');
+        button.style.display = 'none';
+    } else {
+        window.classList.remove('active');
+        button.style.display = 'flex';
+    }
+}
+
+// Handle key press
+function handleKeyPress(event) {
+    if (event.key === 'Enter') {
+        sendMessage();
+    }
+}
+
+// Send message
+function sendMessage() {
+    const input = document.getElementById('chatbotInput');
+    const message = input.value.trim();
+    
+    if (message === '') return;
+    
+    // Add user message
+    addMessage(message, 'user');
+    input.value = '';
+    
+    // Show typing indicator
+    showTypingIndicator();
+    
+    // Generate response
+    setTimeout(() => {
+        removeTypingIndicator();
+        const response = generateResponse(message);
+        addMessage(response, 'bot');
+        
+        // Check for emergency
+        if (message.toLowerCase().includes('təcili') || message.toLowerCase().includes('hücum') || message.toLowerCase().includes('yardım')) {
+            showEmergencyProtocol();
+        }
+    }, 1000 + Math.random() * 1000);
+}
+
+// Add message to chat
+function addMessage(text, sender) {
+    const messages = document.getElementById('chatbotMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${sender}-message`;
+    
+    const time = new Date().toLocaleTimeString('az-AZ', { hour: '2-digit', minute: '2-digit' });
+    
+    messageDiv.innerHTML = `
+        <div class="message-avatar">
+            <i class="fas ${sender === 'bot' ? 'fa-robot' : 'fa-user'}"></i>
+        </div>
+        <div class="message-content">
+            <div class="message-sender">${sender === 'bot' ? 'Security Assistant' : 'Siz'}</div>
+            <div class="message-text">${text}</div>
+            <div class="message-time">${time}</div>
+        </div>
+    `;
+    
+    messages.appendChild(messageDiv);
+    messages.scrollTop = messages.scrollHeight;
+}
+
+// Show typing indicator
+function showTypingIndicator() {
+    const messages = document.getElementById('chatbotMessages');
+    const indicator = document.createElement('div');
+    indicator.className = 'message bot-message typing-indicator-container';
+    indicator.id = 'typingIndicator';
+    
+    indicator.innerHTML = `
+        <div class="message-avatar">
+            <i class="fas fa-robot"></i>
+        </div>
+        <div class="message-content">
+            <div class="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    `;
+    
+    messages.appendChild(indicator);
+    messages.scrollTop = messages.scrollHeight;
+}
+
+// Remove typing indicator
+function removeTypingIndicator() {
+    const indicator = document.getElementById('typingIndicator');
+    if (indicator) {
+        indicator.remove();
+    }
+}
+
+// Clear chat
+function clearChat() {
+    const messages = document.getElementById('chatbotMessages');
+    messages.innerHTML = `
+        <div class="message bot-message">
+            <div class="message-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="message-content">
+                <div class="message-sender">Security Assistant</div>
+                <div class="message-text">
+                    Salam! Mən təhlükəsizlik məsləhətçinizəm. Kontrollar, standartlar və ya təhlükəsizlik tövsiyələri barədə sual verə bilərsiniz.
+                </div>
+                <div class="message-time">İndi</div>
+            </div>
+        </div>
+    `;
+}
+
+// Ask question from suggestion
+function askQuestion(question) {
+    document.getElementById('chatbotInput').value = question;
+    sendMessage();
+}
+
+// Show emergency protocol
+function showEmergencyProtocol() {
+    setTimeout(() => {
+        addMessage(`🚨 **TƏCİLİ PROSEDUR:**
+
+1. **TƏCRİD EDİN** - Təsirlənmiş sistemi şəbəkədən ayırın
+2. **XƏBƏR VERİN** - Incident Response komandasını çağırın (Tel: *911*)
+3. **SÜBUT TOPLAYIN** - Log-ları və yaddaş görüntülərini qoruyun
+4. **RƏHBƏRLİYƏ BİLDİRİN** - Rəhbərliyi məlumatlandırın
+5. **SƏNƏDLƏŞDİRİN** - Bütün addımları qeyd edin
+
+Dərhal GOV-013 (Incident Management) kontrolunu yoxlayın!`, 'bot');
+    }, 500);
+}
+
+// Generate response based on user input
+function generateResponse(message) {
+    const lowerMessage = message.toLowerCase();
+    
+    // Control ID queries
+    if (message.match(/[A-Z]{3}-\d{3}/)) {
+        const controlId = message.match(/[A-Z]{3}-\d{3}/)[0];
+        return getControlInfo(controlId);
+    }
+    
+    // Emergency
+    if (lowerMessage.includes('təcili') || lowerMessage.includes('hücum') || lowerMessage.includes('yardım')) {
+        return getEmergencyResponse();
+    }
+    
+    // Ransomware
+    if (lowerMessage.includes('ransomware') || lowerMessage.includes('fidyə')) {
+        return getRansomwareAdvice();
+    }
+    
+    // ISO 27001
+    if (lowerMessage.includes('iso') || lowerMessage.includes('27001')) {
+        return getISOAdvice();
+    }
+    
+    // NIST
+    if (lowerMessage.includes('nist')) {
+        return getNISTAdvice();
+    }
+    
+    // Compliance
+    if (lowerMessage.includes('komplayans') || lowerMessage.includes('uyğunluq')) {
+        return getComplianceAdvice();
+    }
+    
+    // Risk
+    if (lowerMessage.includes('risk')) {
+        return getRiskAdvice();
+    }
+    
+    // Greeting
+    if (lowerMessage.includes('salam') || lowerMessage.includes('hi')) {
+        return "Salam! Təhlükəsizlik mövzusunda sualınızı gözləyirəm. Məsələn: 'GOV-001 nədir?' və ya 'Ransomware-dən qorunmaq üçün nə etməliyəm?'";
+    }
+    
+    // Default response
+    return getDefaultResponse();
+}
+
+// Get control information
+function getControlInfo(controlId) {
+    const solution = solutions[controlId];
+    if (solution) {
+        return `**${controlId}** - ${solutions[controlId]?.solution.substring(0, 150)}...\n\n📚 **Reference:** ${solutions[controlId]?.ref}`;
+    }
+    return `Təəssüf ki, ${controlId} haqqında məlumat tapılmadı. Başqa kontrol ID sorğulaya bilərsiniz.`;
+}
+
+// Get emergency response
+function getEmergencyResponse() {
+    return `⚠️ **TƏHLÜKƏSİZLİK HADİSƏSİ PROSEDURU**
+
+🚨 **DƏRHAL:**
+• Təsirlənmiş sistemi təcrid edin
+• SOC komandasını çağırın (daxili: 911)
+• İlkin analiz aparın
+
+📋 **ƏMƏLİYYATLAR:**
+• GOV-013 (Incident Management) kontrolunu aktivləşdirin
+• Bütün log-ları toplayın
+• Backup-ları yoxlayın
+
+👥 **KOMANDA:**
+• Incident Commander təyin edin
+• Hüquq şöbəsinə xəbər verin
+• PR komandasını hazırlayın
+
+⚠️ **QEYD:** Heç bir məlumat silməyin!`;
+}
+
+// Get ransomware advice
+function getRansomwareAdvice() {
+    return `🛡️ **RANSOMWARE-DƏN QORUNMA**
+
+**QARŞINI ALMA:**
+• IT-013 (Endpoint Security) - EDR həlli qurun
+• GOV-008 (Backup) - 3-2-1 backup strategiyası
+• PVT-018 (Training) - İstifadəçi təlimləri
+• IT-007 (Vulnerability) - Mütəmadi yamalama
+
+**AŞKARLAMA:**
+• Anomaliya deteksiyası
+• Davranış analizi
+• IOC yoxlaması
+
+**CAVAB:**
+1. Şəbəkədən ayırın
+2. Sistemləri bağlayın
+3. Backup-dan bərpa edin
+4. Hadisəni analiz edin
+
+🔍 **ƏTRAFLI:** IT-013, GOV-008, GOV-013 kontrollarına baxın`;
+}
+
+// Get ISO advice
+function getISOAdvice() {
+    return `📋 **ISO 27001:2022 ƏSAS TƏLƏBLƏR**
+
+**ƏSAS DƏYİŞİKLİKLƏR:**
+• Annex A-da 114 kontrol (əvvəl 14)
+• Yeni kontrollar: Threat Intelligence, Cloud Security, Data Leakage Prevention
+
+**KRİTİK KONTROLLAR:**
+• A.5.1-5.36 - Organizational controls
+• A.6.1-6.8 - People controls
+• A.7.1-7.10 - Physical controls
+• A.8.1-8.34 - Technological controls
+
+**SİZİN VƏZİYYƏTİNİZ:**
+Hal-hazırda ${document.getElementById('totalControlsKPI').textContent} kontrol ${document.getElementById('complianceKPI').textContent} uyğunluq səviyyəsindədir.`;
+}
+
+// Get NIST advice
+function getNISTAdvice() {
+    return `📘 **NIST CYBERSECURITY FRAMEWORK (CSF)**
+
+**5 ƏSAS FUNKSİYA:**
+
+🔹 **IDENTIFY (ID)** - Asset Management, Risk Assessment
+   • ID.AM-1: Physical devices inventory
+   • ID.RA-1: Risk assessment process
+
+🔹 **PROTECT (PR)** - Access Control, Awareness Training
+   • PR.AC-1: Identity management
+   • PR.IP-1: Configuration management
+
+🔹 **DETECT (DE)** - Anomalies, Monitoring
+   • DE.CM-1: Network monitoring
+   • DE.AE-1: Event analysis
+
+🔹 **RESPOND (RS)** - Response Planning, Analysis
+   • RS.RP-1: Response plan execution
+   • RS.CO-1: Communication protocols
+
+🔹 **RECOVER (RC)** - Recovery Planning, Improvements
+   • RC.RP-1: Recovery plan execution
+   • RC.IM-1: Improvement implementation
+
+📌 **ƏTRAFLI:** NIST SP 800-53 Rev5 və ya NIST SP 800-207 (Zero Trust)`;
+}
+
+// Get compliance advice
+function getComplianceAdvice() {
+    const yes = document.getElementById('compliantYes').textContent;
+    const no = document.getElementById('compliantNo').textContent;
+    const total = document.getElementById('totalControlsKPI').textContent;
+    const compliance = document.getElementById('complianceKPI').textContent;
+    
+    return `📊 **UYĞUNLUQ VƏZİYYƏTİ**
+
+**Cari vəziyyət:**
+• ✅ Uyğun: ${yes} kontrol
+• ❌ Uyğun deyil: ${no} kontrol
+• 📊 Ümumi: ${total} kontrol
+• 🎯 Uyğunluq səviyyəsi: ${compliance}
+
+**TÖVSİYƏLƏR:**
+
+🔴 **KRİTİK (${document.getElementById('criticalThreats').textContent}):** Dərhal müdaxilə tələb olunur
+🟠 **YÜKSƏK (${document.getElementById('highThreats').textContent}):** 7 gün ərzində həll edilməli
+🟡 **ORTA (${document.getElementById('mediumThreats').textContent}):** 30 gün ərzində planlaşdırılmalı
+🟢 **AŞAĞI (${document.getElementById('lowThreats').textContent}):** Növbəti auditə qədər həll edilə bilər
+
+📈 **HƏRƏKƏT PLANI:**
+1. Kritik çatışmazlıqları aradan qaldırın
+2. Risk səviyyəsini azaldın
+3. Sənədləşdirməni tamamlayın
+4. İşçiləri təlim edin`;
+}
+
+// Get risk advice
+function getRiskAdvice() {
+    const critical = document.getElementById('criticalThreats').textContent;
+    const high = document.getElementById('highThreats').textContent;
+    const medium = document.getElementById('mediumThreats').textContent;
+    const low = document.getElementById('lowThreats').textContent;
+    
+    return `⚠️ **RİSK ANALİZİ**
+
+**RİSK SƏVİYYƏLƏRİ:**
+🔴 Kritik: ${critical} təhlükə
+🟠 Yüksək: ${high} təhlükə
+🟡 Orta: ${medium} təhlükə
+🟢 Aşağı: ${low} təhlükə
+
+**RİSKLƏRİ AZALTMAL ÜÇÜN:**
+
+1. **Kritik risklər** - Dərhal təcrid edin və remediasiya edin
+2. **Yüksək risklər** - 7 gün ərzində həll edin
+3. **Orta risklər** - 30 gün ərzində planlaşdırın
+4. **Aşağı risklər** - Qəbul edin və ya monitor edin
+
+📋 **RİSK İDARƏETMƏ:**
+• GOV-021 (Risk Assessment) kontrolunu aktivləşdirin
+• Risk reyestrini yeniləyin
+• Rüblük risk review keçirin
+
+🔍 **ƏTRAFLI:** ISO 31000:2018 Risk Management Standard`;
+}
+
+// Get default response
+function getDefaultResponse() {
+    const responses = [
+        "Sualınızı tam başa düşmədim. Aşağıdakı mövzularda kömək edə bilərəm:\n• Kontrol ID-lər (məs: GOV-001)\n• Ransomware qorunması\n• ISO 27001 tələbləri\n• NIST CSF\n• Risk analizi\n• Uyğunluq vəziyyəti",
+        
+        "Mən təhlükəsizlik kontrolları, standartlar və tövsiyələr haqqında məlumat verə bilərəm. Zəhmət olmasa sualınızı dəqiqləşdirin.",
+        
+        "Sizə necə kömək edə bilərəm? Məsələn:\n• 'GOV-001 nədir?'\n• 'Ransomware-dən qorunmaq?'\n• 'ISO 27001 nə tələb edir?'\n• 'Risk səviyyəm nədir?'"
+    ];
+    
+    return responses[Math.floor(Math.random() * responses.length)];
+}
+
 // Initialize
 createParticles();
 renderInfrastructureCards();
-selectInfrastructure('government');
+
+// Set government as default after a short delay
+setTimeout(() => {
+    selectInfrastructure('government');
+    
+    // Risk Heatmap-i başlat
+    if (typeof renderRiskHeatmap === 'function') {
+        renderRiskHeatmap();
+    }
+}, 500);
+
+// Initialize chatbot
+document.addEventListener('DOMContentLoaded', function() {
+    const chatbotButton = document.getElementById('chatbotButton');
+    if (chatbotButton) {
+        chatbotButton.addEventListener('click', toggleChatbot);
+    }
+    
+    // Close chatbot when clicking outside
+    document.addEventListener('click', function(event) {
+        const container = document.getElementById('chatbotContainer');
+        const window = document.getElementById('chatbotWindow');
+        
+        if (isChatbotOpen && 
+            container && window &&
+            !container.contains(event.target) && 
+            !window.contains(event.target)) {
+            toggleChatbot();
+        }
+    });
+});
 </script>
 </body>
-
 </html>
