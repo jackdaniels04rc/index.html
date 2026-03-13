@@ -2097,6 +2097,15 @@ body {
                 </div>
             </div>
             
+            <!-- Standard Filter -->
+            <div id="standardFilterBar" style="margin-bottom: 15px; padding: 15px; background: rgba(0,243,255,0.05); border-radius: 15px; border: 1px solid var(--card-border);">
+                <div style="font-family: 'Orbitron', sans-serif; font-size: 13px; color: var(--primary); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-filter"></i> FILTER BY STANDARD:
+                    <span id="filteredCount" style="background: linear-gradient(135deg,var(--primary),var(--secondary)); color: var(--dark); padding: 2px 10px; border-radius: 20px; font-size: 12px;"></span>
+                </div>
+                <div id="standardFilterBtns" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+            </div>
+
             <div class="table-container" style="max-height: 600px; overflow-y: auto;">
                 <table class="controls-table" id="controlsTable">
                     <thead>
@@ -2106,7 +2115,7 @@ body {
                             <th>Reference</th>
                             <th>Category</th>
                             <th>Status</th>
-                            <th>Risk</th>
+                            <th>Risk Level</th>
                         </tr>
                     </thead>
                     <tbody id="controlsTableBody">
@@ -2204,43 +2213,42 @@ body {
         <button class="alert-btn" onclick="showCriticalControls()">VIEW</button>
     </div>
     
-    <!-- Report Section -->
-    <div style="background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 25px; padding: 30px; border: 1px solid var(--card-border); margin-top: 25px;">
-        <div class="section-header">
-            <div class="section-title">
-                <i class="fas fa-file-alt"></i>
-                GENERATE REPORT
-            </div>
+<!-- Report Section -->
+<div style="background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 25px; padding: 30px; border: 1px solid var(--card-border); margin-top: 25px;">
+    <div class="section-header">
+        <div class="section-title">
+            <i class="fas fa-file-alt"></i>
+            GENERATE REPORT
         </div>
-        
-        <div class="framework-tabs">
-            <div class="framework-tab active" onclick="selectFramework('NERC CIP')">NERC CIP</div>
-            <div class="framework-tab" onclick="selectFramework('ISO 27001')">ISO 27001</div>
-            <div class="framework-tab" onclick="selectFramework('NIST 800-53')">NIST 800-53</div>
-            <div class="framework-tab" onclick="selectFramework('PCI DSS')">PCI DSS</div>
-            <div class="framework-tab" onclick="selectFramework('HIPAA')">HIPAA</div>
-        </div>
-        
-        <div style="display: flex; gap: 20px; align-items: center;">
-            <select id="reportInfrastructure" style="background: rgba(0,243,255,0.1); border: 1px solid var(--primary); color: white; padding: 15px; border-radius: 15px; flex: 1; font-size: 16px;">
-                <option value="government">Government</option>
-                <option value="defense">Defense</option>
-                <option value="healthcare">Healthcare</option>
-                <option value="financial">Financial Markets</option>
-                <option value="energy">Energy</option>
-                <option value="transport">Transportation</option>
-                <option value="it">Information Technology</option>
-                <option value="telecom">Telecommunications</option>
-                <option value="water">Water Supply</option>
-                <option value="ecology">Ecology</option>
-                <option value="private">PRIVATE SECTOR</option>
-            </select>
-            <button class="generate-btn" onclick="generatePDF()">
-                <i class="fas fa-file-pdf"></i>
-                GENERATE PDF REPORT
-                <i class="fas fa-arrow-right"></i>
-            </button>
-        </div>
+    </div>
+    
+    <div class="framework-tabs">
+        <div class="framework-tab active" onclick="selectFramework('NERC CIP')">NERC CIP</div>
+        <div class="framework-tab" onclick="selectFramework('ISO 27001')">ISO 27001</div>
+        <div class="framework-tab" onclick="selectFramework('NIST 800-53')">NIST 800-53</div>
+        <div class="framework-tab" onclick="selectFramework('PCI DSS')">PCI DSS</div>
+        <div class="framework-tab" onclick="selectFramework('HIPAA')">HIPAA</div>
+    </div>
+    
+    <div style="display: flex; gap: 20px; align-items: center;">
+        <select id="reportInfrastructure" style="background: rgba(0,243,255,0.1); border: 1px solid var(--primary); color: white; padding: 15px; border-radius: 15px; flex: 1; font-size: 16px;">
+            <option value="government">Government</option>
+            <option value="defense">Defense</option>
+            <option value="healthcare">Healthcare</option>
+            <option value="financial">Financial Markets</option>
+            <option value="energy">Energy</option>
+            <option value="transport">Transportation</option>
+            <option value="it">Information Technology</option>
+            <option value="telecom">Telecommunications</option>
+            <option value="water">Water Supply</option>
+            <option value="ecology">Ecology</option>
+            <option value="private">PRIVATE SECTOR</option>
+        </select>
+        <button class="generate-btn" onclick="generatePDF()">
+            <i class="fas fa-file-pdf"></i>
+            GENERATE PDF REPORT
+            <i class="fas fa-arrow-right"></i>
+        </button>
     </div>
 </div>
 
@@ -3983,399 +3991,645 @@ const threatIntelligence = {
     }
 };
 
-// Kontrollar (bütün sektorlar üçün 35+ kontrol) - 400+ kontrol
+// Kontrollar - bütün sektorlar üçün 49 kontrol (Kİİ Qaydaları NK 229/2023 əsasında)
 const infrastructureControls = {
     government: [
-        { id: 'GOV-001', name: 'Information Security Policy', category: 'Policy', framework: 'ISO 27001:2022 A.5.1.1' },
-        { id: 'GOV-002', name: 'Secure Document Management', category: 'IT', framework: 'ISO 27001:2022 A.8.10' },
-        { id: 'GOV-003', name: 'Personnel Security Screening', category: 'HR', framework: 'ISO 27001:2022 A.5.15' },
-        { id: 'GOV-004', name: 'Physical Security System', category: 'Physical', framework: 'ISO 27001:2022 A.7.1' },
-        { id: 'GOV-005', name: 'Security Operations Center (SOC)', category: 'Cyber', framework: 'ISO 27001:2022 A.8.16' },
-        { id: 'GOV-006', name: 'Business Continuity Plan', category: 'BCM', framework: 'ISO 27001:2022 A.5.29' },
-        { id: 'GOV-007', name: 'Internal Audit Mechanism', category: 'Audit', framework: 'ISO 27001:2022 Clause 9.2' },
-        { id: 'GOV-008', name: 'Data Backup System', category: 'Backup', framework: 'ISO 27001:2022 A.8.13' },
-        { id: 'GOV-009', name: 'Network Security', category: 'Network', framework: 'ISO 27001:2022 A.8.20' },
-        { id: 'GOV-010', name: 'Antivirus Software', category: 'Software', framework: 'ISO 27001:2022 A.8.8' },
-        { id: 'GOV-011', name: 'Access Control System (RBAC)', category: 'Access', framework: 'ISO 27001:2022 A.5.15' },
-        { id: 'GOV-012', name: 'Password Policy & MFA', category: 'Access', framework: 'ISO 27001:2022 A.5.17' },
-        { id: 'GOV-013', name: 'Incident Management', category: 'Incident', framework: 'ISO 27001:2022 A.5.24' },
-        { id: 'GOV-014', name: 'Vulnerability Management', category: 'Vulnerability', framework: 'ISO 27001:2022 A.8.8' },
-        { id: 'GOV-015', name: 'Supplier Security', category: 'Supplier', framework: 'ISO 27001:2022 A.5.19' },
-        { id: 'GOV-016', name: 'Mobile Device Management', category: 'Mobile', framework: 'ISO 27001:2022 A.5.20' },
-        { id: 'GOV-017', name: 'Remote Access Security', category: 'Remote', framework: 'ISO 27001:2022 A.6.7' },
-        { id: 'GOV-018', name: 'Cryptographic Controls', category: 'Crypto', framework: 'ISO 27001:2022 A.8.24' },
-        { id: 'GOV-019', name: 'Data Classification', category: 'Data', framework: 'ISO 27001:2022 A.5.12' },
-        { id: 'GOV-020', name: 'Legal Compliance', category: 'Compliance', framework: 'ISO 27001:2022 A.5.31' },
-        { id: 'GOV-021', name: 'Risk Assessment', category: 'Risk', framework: 'ISO 27001:2022 Clause 6.1' },
-        { id: 'GOV-022', name: 'Security Awareness Training', category: 'Training', framework: 'ISO 27001:2022 A.6.3' },
-        { id: 'GOV-023', name: 'Change Management', category: 'Management', framework: 'ISO 27001:2022 A.8.32' },
-        { id: 'GOV-024', name: 'Physical Entry Controls', category: 'Physical', framework: 'ISO 27001:2022 A.7.2' },
-        { id: 'GOV-025', name: 'Equipment Security', category: 'Physical', framework: 'ISO 27001:2022 A.7.9' },
-        { id: 'GOV-026', name: 'Clear Desk Policy', category: 'Physical', framework: 'ISO 27001:2022 A.7.7' },
-        { id: 'GOV-027', name: 'Clear Screen Policy', category: 'Physical', framework: 'ISO 27001:2022 A.7.7' },
-        { id: 'GOV-028', name: 'Teleworking Security', category: 'Remote', framework: 'ISO 27001:2022 A.6.7' },
-        { id: 'GOV-029', name: 'Information Transfer', category: 'Data', framework: 'ISO 27001:2022 A.8.11' },
-        { id: 'GOV-030', name: 'Confidentiality Agreements', category: 'Legal', framework: 'ISO 27001:2022 A.6.2' },
-        { id: 'GOV-031', name: 'Secure Development Policy', category: 'Dev', framework: 'ISO 27001:2022 A.8.25' },
-        { id: 'GOV-032', name: 'System Acceptance Testing', category: 'Dev', framework: 'ISO 27001:2022 A.8.29' },
-        { id: 'GOV-033', name: 'Database Security', category: 'Data', framework: 'ISO 27001:2022 A.8.10' },
-        { id: 'GOV-034', name: 'Cloud Security', category: 'Cloud', framework: 'ISO 27001:2022 A.5.23' },
-        { id: 'GOV-035', name: 'API Security', category: 'Dev', framework: 'ISO 27001:2022 A.8.27' }
+        // 4.1.1 Ümumi idarəetmə və risk
+        { id: 'GOV-001', name: 'Təhlükəsizlik prosedurlarının hazırlanması', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | ISO 27001:2022 A.5.1' },
+        { id: 'GOV-002', name: 'Reyestrdə prosedur yerləşdirilməsi', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | ISO 27001:2022 A.5.1' },
+        { id: 'GOV-003', name: 'Təhlükəsizlik risklərinin müəyyənləşdirilməsi', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | ISO 27001:2022 Cl.6.1' },
+        { id: 'GOV-004', name: 'Səlahiyyət bölgüsü (vəzifə müəyyənliyi)', category: 'Management', framework: 'Kİİ Qaydaları 4.1.1(3) | ISO 27001:2022 A.5.2' },
+        { id: 'GOV-005', name: 'Üçüncü tərəf müqavilə təhlükəsizlik şərtləri', category: 'Supplier', framework: 'Kİİ Qaydaları 4.1.1(4) | ISO 27001:2022 A.5.19' },
+        { id: 'GOV-006', name: 'İnformasiya Təhlükəsizliyi Siyasəti', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1 | ISO 27001:2022 A.5.1' },
+        { id: 'GOV-007', name: 'Risk qiymətləndirmə (Risk Assessment)', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | ISO 27001:2022 Cl.6.1' },
+        // 4.1.2 İnsan resursları
+        { id: 'GOV-008', name: 'Aidiyyəti şəxslərin mütəmadi təlimi', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | ISO 27001:2022 A.6.3' },
+        { id: 'GOV-009', name: 'İşə qəbulda təhlükəsizlik öhdəliyi imzalanması', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | ISO 27001:2022 A.6.1' },
+        { id: 'GOV-010', name: 'İşdən çıxmada hesab deaktivasiyası', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | ISO 27001:2022 A.6.5' },
+        { id: 'GOV-011', name: 'Personal təhlükəsizlik yoxlaması (screening)', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | ISO 27001:2022 A.5.15' },
+        { id: 'GOV-012', name: 'Məlumatların açıqlanmaması öhdəliyi (NDA)', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | ISO 27001:2022 A.6.2' },
+        { id: 'GOV-013', name: 'Maarifləndirici tədbirlər (Awareness Program)', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | ISO 27001:2022 A.6.3' },
+        // 4.1.3 Fiziki və informasiya təhlükəsizliyi
+        { id: 'GOV-014', name: 'İcazəsiz fiziki girişin qarşısının alınması', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(1) | ISO 27001:2022 A.7.1' },
+        { id: 'GOV-015', name: 'Aktivlərin itirilməsinin qarşısının alınması', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(2) | ISO 27001:2022 A.7.9' },
+        { id: 'GOV-016', name: 'Sertifikatlı proqram/texniki vasitələr', category: 'Software', framework: 'Kİİ Qaydaları 4.1.3(3) | ISO 27001:2022 A.8.8' },
+        { id: 'GOV-017', name: 'Davamlı enerji/soyutma təchizatı', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(4) | ISO 27001:2022 A.7.11' },
+        { id: 'GOV-018', name: 'Giriş nəzarəti və loq-fayllar (Access Log)', category: 'Access', framework: 'Kİİ Qaydaları 4.1.3(5) | ISO 27001:2022 A.8.15' },
+        { id: 'GOV-019', name: 'Məlumatın konfidensiallığının qorunması', category: 'Crypto', framework: 'Kİİ Qaydaları 4.1.3(6) | ISO 27001:2022 A.8.24' },
+        { id: 'GOV-020', name: 'Məlumat Təsnifatı (Data Classification)', category: 'Data', framework: 'Kİİ Qaydaları 4.1.3 | ISO 27001:2022 A.5.12' },
+        { id: 'GOV-021', name: 'Şəbəkə Təhlükəsizliyi (Network Security)', category: 'Network', framework: 'Kİİ Qaydaları 4.1.3 | ISO 27001:2022 A.8.20' },
+        // 4.1.4 Əməliyyatların idarəedilməsi
+        { id: 'GOV-022', name: 'Əməliyyat prosedurlarının sənədləşdirilməsi', category: 'Ops', framework: 'Kİİ Qaydaları 4.1.4(1) | ISO 27001:2022 A.5.37' },
+        { id: 'GOV-023', name: 'Dəyişikliklərin idarəedilməsi (Change Mgmt)', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(2) | ISO 27001:2022 A.8.32' },
+        { id: 'GOV-024', name: 'Aktivlərin inventar qeydiyyatı (CMDB)', category: 'Assets', framework: 'Kİİ Qaydaları 4.1.4(3) | ISO 27001:2022 A.5.9' },
+        { id: 'GOV-025', name: 'Texniki layihə sənədlərinin ekspertizası', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(4) | ISO 27001:2022 A.8.25' },
+        { id: 'GOV-026', name: 'Zəiflik İdarəetməsi (Vulnerability Mgmt)', category: 'Vulnerability', framework: 'Kİİ Qaydaları 4.1.4 | ISO 27001:2022 A.8.8' },
+        { id: 'GOV-027', name: 'Şəbəkə Seqmentasiyası (Network Segmentation)', category: 'Network', framework: 'Kİİ Qaydaları 4.1.4 | ISO 27001:2022 A.8.22' },
+        { id: 'GOV-028', name: 'Bulud Təhlükəsizliyi (Cloud Security)', category: 'Cloud', framework: 'Kİİ Qaydaları 4.1.4 | ISO 27001:2022 A.5.23' },
+        // 4.1.5 Kiberinsidentlərin idarəedilməsi
+        { id: 'GOV-029', name: 'Kiberinsident idarəetmə prosedurları', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(1) | ISO 27001:2022 A.5.24' },
+        { id: 'GOV-030', name: 'Kiberinsidentlərin aşkarlanması (SIEM/SOC)', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.5(2) | ISO 27001:2022 A.8.16' },
+        { id: 'GOV-031', name: 'Real vaxt kommunikasiya (CERT bildirim)', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(3) | ISO 27001:2022 A.5.26' },
+        { id: 'GOV-032', name: 'İnsident sonrası hesabatlılıq (Post-Incident)', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(4) | ISO 27001:2022 A.5.27' },
+        { id: 'GOV-033', name: 'Milli kibermərkəzə bildirim (DTX)', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5 | Kİİ Qanunu 20-4' },
+        { id: 'GOV-034', name: 'Threat Intelligence (Kibertəhdid analizi)', category: 'Cyber', framework: 'Kİİ Qaydaları 4.1.5 | ISO 27001:2022 A.5.7' },
+        { id: 'GOV-035', name: 'DDoS Müdafiəsi', category: 'Network', framework: 'Kİİ Qaydaları 4.1.5 | ISO 27001:2022 A.8.20' },
+        // 4.1.6 Fəaliyyətin fasiləsizliyi
+        { id: 'GOV-036', name: 'Fövqəladə hal strategiyası (BCP)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(1) | ISO 27001:2022 A.5.29' },
+        { id: 'GOV-037', name: 'Fəaliyyətin davamlılıq planı (DRP)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | ISO 27001:2022 A.5.29' },
+        { id: 'GOV-038', name: 'Bərpa planının illik sınağı (DR Test)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | ISO 27001:2022 A.5.30' },
+        { id: 'GOV-039', name: 'Dayanma müddəti həddi (RTO/RPO)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(3) | ISO 27001:2022 A.5.30' },
+        { id: 'GOV-040', name: 'Məlumat Ehtiyatı (Data Backup 3-2-1)', category: 'Backup', framework: 'Kİİ Qaydaları 4.1.6 | ISO 27001:2022 A.8.13' },
+        { id: 'GOV-041', name: 'Alternativ enerji mənbəyi (UPS/Generator)', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.6 | ISO 27001:2022 A.7.11' },
+        { id: 'GOV-042', name: 'Uzaqdan Giriş Təhlükəsizliyi (VPN/Zero Trust)', category: 'Remote', framework: 'Kİİ Qaydaları 4.1.6 | ISO 27001:2022 A.6.7' },
+        // 4.1.7 Monitorinq, audit və müdaxilə sınaqları
+        { id: 'GOV-043', name: 'Reyestrə məlumat daxil edilməsi', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(1) | ISO 27001:2022 Cl.9.1' },
+        { id: 'GOV-044', name: 'Fasiləsiz 24/7 monitorinq (SIEM/loq)', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(2) | ISO 27001:2022 A.8.15' },
+        { id: 'GOV-045', name: 'Daxili audit planı (illik)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(3) | ISO 27001:2022 Cl.9.2' },
+        { id: 'GOV-046', name: 'Penetrasiya sınaqları (ildə 1+ dəfə)', category: 'Test', framework: 'Kİİ Qaydaları 4.1.7(4) | ISO 27001:2022 A.8.8' },
+        { id: 'GOV-047', name: 'Kibermərkəzə real vaxt məlumat ötürmə', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(5) | Kİİ Qanunu 20-4' },
+        { id: 'GOV-048', name: 'Konfiqurasiya qeydiyyatı (tamlıq, əlçatanlıq)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(6) | ISO 27001:2022 A.8.9' },
+        { id: 'GOV-049', name: 'Hüquqi uyğunluq (Legal Compliance)', category: 'Compliance', framework: 'Kİİ Qaydaları 4.1.7 | ISO 27001:2022 A.5.31' }
     ],
     defense: [
-        { id: 'DEF-001', name: 'Classified Information Protection', category: 'Security', framework: 'NIST SP 800-53 Rev5 AC-3' },
-        { id: 'DEF-002', name: 'Cryptographic Systems (Type 1)', category: 'Crypto', framework: 'NIST SP 800-53 SC-13' },
-        { id: 'DEF-003', name: 'Personnel Clearance (TS/SCI)', category: 'HR', framework: 'NIST SP 800-53 PS-3' },
-        { id: 'DEF-004', name: 'Military Base Physical Security', category: 'Physical', framework: 'NIST SP 800-53 PE-3' },
-        { id: 'DEF-005', name: 'Cyber Defense Operations', category: 'Cyber', framework: 'NIST SP 800-53 SI-4' },
-        { id: 'DEF-006', name: 'Secure Communications (MILSATCOM)', category: 'Comms', framework: 'NIST SP 800-53 SC-8' },
-        { id: 'DEF-007', name: 'Intelligence Data Protection', category: 'Data', framework: 'ICD 703' },
-        { id: 'DEF-008', name: 'Operational Security (OPSEC)', category: 'Ops', framework: 'DoD OPSEC Program' },
-        { id: 'DEF-009', name: 'Weapon Systems Security', category: 'Systems', framework: 'DoD Anti-Tamper Policy' },
-        { id: 'DEF-010', name: 'Security Training (Annual)', category: 'Training', framework: 'NIST SP 800-53 AT-2' },
-        { id: 'DEF-011', name: 'Emergency Response (COOP)', category: 'BCM', framework: 'NIST SP 800-53 CP-2' },
-        { id: 'DEF-012', name: 'Drone/UAS Security', category: 'UAS', framework: 'DoD UAS Policy' },
-        { id: 'DEF-013', name: 'Radar Systems Protection', category: 'Systems', framework: 'MIL-STD-461' },
-        { id: 'DEF-014', name: 'Perimeter Security (UFC)', category: 'Physical', framework: 'UFC 4-022-03' },
-        { id: 'DEF-015', name: 'Cyber Intelligence', category: 'Cyber', framework: 'DoD Cyber Strategy' },
-        { id: 'DEF-016', name: 'Key Management (HSM)', category: 'Crypto', framework: 'FIPS 140-3' },
-        { id: 'DEF-017', name: 'Satellite Communications', category: 'Comms', framework: 'MIL-STD-188-165' },
-        { id: 'DEF-018', name: 'Vulnerability Scanning', category: 'Vulnerability', framework: 'NIST SP 800-53 RA-5' },
-        { id: 'DEF-019', name: 'Incident Response (CIRT)', category: 'Incident', framework: 'NIST SP 800-53 IR-4' },
-        { id: 'DEF-020', name: 'Logistics Security', category: 'Logistics', framework: 'NIST SP 800-53 SA-12' },
-        { id: 'DEF-021', name: 'Supply Chain Security', category: 'Supply Chain', framework: 'NIST SP 800-53 SA-9' },
-        { id: 'DEF-022', name: 'Wireless Security', category: 'Wireless', framework: 'NIST SP 800-53 SC-4' },
-        { id: 'DEF-023', name: 'Database Protection (MLS)', category: 'Data', framework: 'NIST SP 800-53 AC-3' },
-        { id: 'DEF-024', name: 'Biometric Access Control', category: 'Access', framework: 'NIST SP 800-53 IA-5' },
-        { id: 'DEF-025', name: 'Military Vehicle Security', category: 'Physical', framework: 'MIL-STD-810' },
-        { id: 'DEF-026', name: 'Battle Management Systems', category: 'Systems', framework: 'DoD C2 Policy' },
-        { id: 'DEF-027', name: 'Medical Facility Security', category: 'Medical', framework: 'HIPAA Security Rule' },
-        { id: 'DEF-028', name: 'Personnel Monitoring', category: 'HR', framework: 'NIST SP 800-53 PE-8' },
-        { id: 'DEF-029', name: 'Training System Security', category: 'Training', framework: 'NIST SP 800-53 AT-3' },
-        { id: 'DEF-030', name: 'Active Cyber Defense', category: 'Cyber', framework: 'DoD Cyber Strategy' },
-        { id: 'DEF-031', name: 'Electronic Warfare Protection', category: 'EW', framework: 'MIL-STD-464' },
-        { id: 'DEF-032', name: 'Frequency Hopping (FHSS)', category: 'Comms', framework: 'MIL-STD-188-140' },
-        { id: 'DEF-033', name: 'Anti-Jamming Systems', category: 'Comms', framework: 'MIL-STD-810' },
-        { id: 'DEF-034', name: 'Secure GPS (M-Code)', category: 'Navigation', framework: 'MIL-STD-2401' },
-        { id: 'DEF-035', name: 'TEMPEST Certification', category: 'Physical', framework: 'NSTISSAM TEMPEST/1-92' }
+        // 4.1.1 Ümumi idarəetmə və risk
+        { id: 'DEF-001', name: 'Təhlükəsizlik prosedurlarının hazırlanması', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | NIST SP 800-53 PL-1' },
+        { id: 'DEF-002', name: 'Reyestrdə prosedur yerləşdirilməsi', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | NIST SP 800-53 PL-2' },
+        { id: 'DEF-003', name: 'Təhlükəsizlik risklərinin müəyyənləşdirilməsi', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | NIST SP 800-53 RA-3' },
+        { id: 'DEF-004', name: 'Səlahiyyət bölgüsü və vəzifə müəyyənliyi', category: 'Management', framework: 'Kİİ Qaydaları 4.1.1(3) | NIST SP 800-53 AC-2' },
+        { id: 'DEF-005', name: 'Üçüncü tərəf müqavilə təhlükəsizlik şərtləri', category: 'Supplier', framework: 'Kİİ Qaydaları 4.1.1(4) | NIST SP 800-53 SA-9' },
+        { id: 'DEF-006', name: 'Gizli məlumatların qorunması (Classified Info)', category: 'Security', framework: 'Kİİ Qaydaları 4.1.1 | NIST SP 800-53 AC-3' },
+        { id: 'DEF-007', name: 'Risk qiymətləndirməsi (Risk Assessment)', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | NIST SP 800-53 RA-5' },
+        // 4.1.2 İnsan resursları
+        { id: 'DEF-008', name: 'Aidiyyəti şəxslərin mütəmadi təlimi', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | NIST SP 800-53 AT-2' },
+        { id: 'DEF-009', name: 'İşə qəbulda təhlükəsizlik öhdəliyi imzalanması', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | NIST SP 800-53 PS-3' },
+        { id: 'DEF-010', name: 'İşdən çıxmada hesab deaktivasiyası', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | NIST SP 800-53 PS-4' },
+        { id: 'DEF-011', name: 'Personal buraxılış (Clearance TS/SCI)', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | NIST SP 800-53 PS-2' },
+        { id: 'DEF-012', name: 'İnsayder Təhdid Proqramı (Insider Threat)', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | NIST SP 800-53 PE-8' },
+        { id: 'DEF-013', name: 'Maarifləndirici tədbirlər (Security Awareness)', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | NIST SP 800-53 AT-3' },
+        // 4.1.3 Fiziki və informasiya təhlükəsizliyi
+        { id: 'DEF-014', name: 'İcazəsiz fiziki girişin qarşısının alınması', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(1) | NIST SP 800-53 PE-3' },
+        { id: 'DEF-015', name: 'Aktivlərin itirilməsinin/zədələnməsinin qarşısı', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(2) | NIST SP 800-53 PE-6' },
+        { id: 'DEF-016', name: 'Sertifikatlı proqram/texniki vasitələr', category: 'Software', framework: 'Kİİ Qaydaları 4.1.3(3) | NIST SP 800-53 SA-11' },
+        { id: 'DEF-017', name: 'Davamlı enerji/soyutma təchizatı (UPS)', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(4) | NIST SP 800-53 PE-11' },
+        { id: 'DEF-018', name: 'Giriş nəzarəti (loq-fayllar, bildiriş sistemi)', category: 'Access', framework: 'Kİİ Qaydaları 4.1.3(5) | NIST SP 800-53 AU-2' },
+        { id: 'DEF-019', name: 'Məlumatın konfidensiallığının qorunması', category: 'Crypto', framework: 'Kİİ Qaydaları 4.1.3(6) | NIST SP 800-53 SC-13' },
+        { id: 'DEF-020', name: 'Hərbi baza perimetr təhlükəsizliyi (UFC)', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3 | UFC 4-022-03' },
+        { id: 'DEF-021', name: 'TEMPEST / Elektromaqnit Təhlükəsizliyi', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3 | NSTISSAM TEMPEST/1-92' },
+        // 4.1.4 Əməliyyatların idarəedilməsi
+        { id: 'DEF-022', name: 'Əməliyyat prosedurlarının sənədləşdirilməsi', category: 'Ops', framework: 'Kİİ Qaydaları 4.1.4(1) | NIST SP 800-53 CM-6' },
+        { id: 'DEF-023', name: 'Dəyişikliklərin idarəedilməsi (Change Mgmt)', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(2) | NIST SP 800-53 CM-3' },
+        { id: 'DEF-024', name: 'Aktivlərin inventar qeydiyyatı (CMDB)', category: 'Assets', framework: 'Kİİ Qaydaları 4.1.4(3) | NIST SP 800-53 CM-8' },
+        { id: 'DEF-025', name: 'Texniki layihə sənədlərinin ekspertizası', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(4) | NIST SP 800-53 SA-4' },
+        { id: 'DEF-026', name: 'Kibermüdafiə Əməliyyatları (SOC/CYBERCOM)', category: 'Cyber', framework: 'Kİİ Qaydaları 4.1.4 | NIST SP 800-53 SI-4' },
+        { id: 'DEF-027', name: 'Zəiflik İdarəetməsi (Vulnerability Mgmt)', category: 'Vulnerability', framework: 'Kİİ Qaydaları 4.1.4 | NIST SP 800-53 RA-5' },
+        { id: 'DEF-028', name: 'Şəbəkə Seqmentasiyası / Firewall', category: 'Network', framework: 'Kİİ Qaydaları 4.1.4 | NIST SP 800-53 SC-7' },
+        // 4.1.5 Kiberinsidentlərin idarəedilməsi
+        { id: 'DEF-029', name: 'Kiberinsident idarəetmə prosedurları', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(1) | NIST SP 800-53 IR-1' },
+        { id: 'DEF-030', name: 'Kiberinsidentlərin aşkarlanması (monitorinq)', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.5(2) | NIST SP 800-53 IR-5' },
+        { id: 'DEF-031', name: 'Real vaxt kommunikasiya kanalları (CERT)', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(3) | NIST SP 800-53 IR-6' },
+        { id: 'DEF-032', name: 'İnsident sonrası hesabatlılıq (Post-Incident)', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(4) | NIST SP 800-53 IR-4' },
+        { id: 'DEF-033', name: 'Hərbi Hadisəyə Cavab Qrupu (CIRT)', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5 | NIST SP 800-53 IR-4' },
+        { id: 'DEF-034', name: 'Threat Intelligence (Kibertəhdid kəşfiyyatı)', category: 'Cyber', framework: 'Kİİ Qaydaları 4.1.5 | NIST SP 800-53 SI-4' },
+        { id: 'DEF-035', name: 'Milli kibermərkəzə (DTX) bildirim', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5 | Kİİ Qanunu 20-4' },
+        // 4.1.6 Fəaliyyətin fasiləsizliyi
+        { id: 'DEF-036', name: 'Fövqəladə hal strategiyası (COOP/BCP)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(1) | NIST SP 800-53 CP-2' },
+        { id: 'DEF-037', name: 'Fəaliyyətin davamlılıq planı (DRP)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | NIST SP 800-53 CP-4' },
+        { id: 'DEF-038', name: 'Bərpa planının illik sınağı (DR Test)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | NIST SP 800-53 CP-4' },
+        { id: 'DEF-039', name: 'Dayanma müddəti həddi (RTO/RPO)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(3) | NIST SP 800-53 CP-10' },
+        { id: 'DEF-040', name: 'Məlumat Ehtiyatı (Offline/Airgap Backup)', category: 'Backup', framework: 'Kİİ Qaydaları 4.1.6 | NIST SP 800-53 CP-9' },
+        { id: 'DEF-041', name: 'Hərbi Rabitə Sistemi Ehtiyatı (MILSATCOM)', category: 'Comms', framework: 'Kİİ Qaydaları 4.1.6 | MIL-STD-188-165' },
+        { id: 'DEF-042', name: 'Silah Sistemlərinin Təhlükəsizliyi (Anti-tamper)', category: 'Systems', framework: 'Kİİ Qaydaları 4.1.6 | DoD Anti-Tamper Policy' },
+        // 4.1.7 Monitorinq, audit, müdaxilə sınaqları
+        { id: 'DEF-043', name: 'Reyestrə məlumat daxil edilməsi', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(1) | NIST SP 800-53 CA-7' },
+        { id: 'DEF-044', name: 'Fasiləsiz 24/7 monitorinq (loq-fayllar)', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(2) | NIST SP 800-53 AU-12' },
+        { id: 'DEF-045', name: 'Daxili audit planı (illik)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(3) | NIST SP 800-53 CA-2' },
+        { id: 'DEF-046', name: 'Penetrasiya sınaqları (Pentest ildə 1+)', category: 'Test', framework: 'Kİİ Qaydaları 4.1.7(4) | NIST SP 800-53 CA-8' },
+        { id: 'DEF-047', name: 'Kibermərkəzə real vaxt məlumat ötürmə', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(5) | Kİİ Qanunu 20-4' },
+        { id: 'DEF-048', name: 'Konfiqurasiya qeydiyyatı (CMDB/tamlıq)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(6) | NIST SP 800-53 CM-8' },
+        { id: 'DEF-049', name: 'Elektron Hərb / Anti-Jamming (SIGINT)', category: 'EW', framework: 'Kİİ Qaydaları 4.1.7 | MIL-STD-464' }
     ],
     healthcare: [
-        { id: 'HLT-001', name: 'Patient Data Privacy (ePHI)', category: 'Privacy', framework: 'HIPAA 45 CFR 164.312(a)(1)' },
-        { id: 'HLT-002', name: 'Medical Device Security', category: 'Medical', framework: 'FDA 21 CFR Part 820.30' },
-        { id: 'HLT-003', name: 'Emergency Response System', category: 'Ops', framework: 'NFPA 1221-2022 Chapter 7' },
-        { id: 'HLT-004', name: 'Pharmaceutical Database', category: 'Data', framework: 'DEA 21 CFR Part 1311.100' },
-        { id: 'HLT-005', name: 'E-Prescription System', category: 'IT', framework: 'DEA 21 CFR 1311.200' },
-        { id: 'HLT-006', name: 'Medical Imaging (PACS)', category: 'Systems', framework: 'DICOM PS3.15' },
-        { id: 'HLT-007', name: 'Laboratory Information Systems', category: 'Data', framework: 'CLIA 42 CFR 493' },
-        { id: 'HLT-008', name: 'Patient Records Access (EHR)', category: 'Access', framework: 'HIPAA 45 CFR 164.312(a)(1)' },
-        { id: 'HLT-009', name: 'Staff Security Training', category: 'Training', framework: 'HIPAA 45 CFR 164.308(a)(5)' },
-        { id: 'HLT-010', name: 'Emergency Dispatch (911)', category: 'Ops', framework: 'NFPA 1221-2022 Chapter 8' },
-        { id: 'HLT-011', name: 'Hospital Information Systems', category: 'IT', framework: 'ISO 27001:2022 A.5.29' },
-        { id: 'HLT-012', name: 'Medical Device Network Security', category: 'Network', framework: 'FDA Postmarket Guidance 2016' },
-        { id: 'HLT-013', name: 'Electronic Health Records', category: 'Data', framework: 'HIPAA 45 CFR 164.312(c)' },
-        { id: 'HLT-014', name: 'Pharmacy Inventory', category: 'Logistics', framework: 'DEA 21 CFR Part 1300' },
-        { id: 'HLT-015', name: 'Medical Supply Chain', category: 'Supply Chain', framework: 'FDA Supply Chain Guidance 2016' },
-        { id: 'HLT-016', name: 'Patient Privacy Policy', category: 'Policy', framework: 'HIPAA Privacy Rule 45 CFR 164.500' },
-        { id: 'HLT-017', name: 'Health Insurance Data', category: 'Data', framework: 'HIPAA 45 CFR 164.312' },
-        { id: 'HLT-018', name: 'Ambulance Security', category: 'Transport', framework: 'NFPA 1221-2022 Chapter 9' },
-        { id: 'HLT-019', name: 'Hospital Physical Security', category: 'Physical', framework: 'ISO 27001:2022 A.7.1' },
-        { id: 'HLT-020', name: 'Medical Research Data', category: 'Research', framework: 'HIPAA Research 45 CFR 164.512' },
-        { id: 'HLT-021', name: 'Telemedicine Security', category: 'Remote', framework: 'HIPAA 45 CFR 164.312(e)' },
-        { id: 'HLT-022', name: 'Wearable Medical Devices', category: 'IoT', framework: 'FDA Wireless Guidance' },
-        { id: 'HLT-023', name: 'Clinical Trial Data', category: 'Research', framework: '21 CFR Part 11' },
-        { id: 'HLT-024', name: 'Biometric Patient ID', category: 'Access', framework: 'HIPAA 164.312(a)' },
-        { id: 'HLT-025', name: 'Surgical Robot Security', category: 'Medical', framework: 'IEC 80601-2-77' },
-        { id: 'HLT-026', name: 'PACS Security', category: 'Systems', framework: 'DICOM Security Profiles' },
-        { id: 'HLT-027', name: 'HL7 Interface Security', category: 'Integration', framework: 'HL7 Security Standards' },
-        { id: 'HLT-028', name: 'Patient Portal Security', category: 'Web', framework: 'HIPAA 164.312(a)' },
-        { id: 'HLT-029', name: 'Medical IoT Security', category: 'IoT', framework: 'NISTIR 8259' },
-        { id: 'HLT-030', name: 'Genomic Data Protection', category: 'Data', framework: 'GINA 2008' },
-        { id: 'HLT-031', name: 'Mental Health Records', category: 'Privacy', framework: 'HIPAA 45 CFR 164.508' },
-        { id: 'HLT-032', name: 'Substance Abuse Records', category: 'Privacy', framework: '42 CFR Part 2' },
-        { id: 'HLT-033', name: 'Emergency Room Security', category: 'Physical', framework: 'EMTALA Requirements' },
-        { id: 'HLT-034', name: 'Surgical Suite Security', category: 'Physical', framework: 'AORN Guidelines' },
-        { id: 'HLT-035', name: 'Pharmacy Security', category: 'Physical', framework: 'DEA 21 CFR Part 1301' }
+        // 4.1.1 Ümumi idarəetmə və risk
+        { id: 'HLT-001', name: 'Təhlükəsizlik prosedurlarının hazırlanması', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | HIPAA 164.308(a)(1)' },
+        { id: 'HLT-002', name: 'Reyestrdə prosedur yerləşdirilməsi', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | HIPAA 164.316' },
+        { id: 'HLT-003', name: 'Səhiyyə riskinin qiymətləndirilməsi', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | HIPAA 164.308(a)(1)(ii)(A)' },
+        { id: 'HLT-004', name: 'Səlahiyyət bölgüsü (Məxfilik Məsul Şəxs)', category: 'Management', framework: 'Kİİ Qaydaları 4.1.1(3) | HIPAA 164.530(a)' },
+        { id: 'HLT-005', name: 'Üçüncü tərəf müqavilə tələbləri (BAA)', category: 'Supplier', framework: 'Kİİ Qaydaları 4.1.1(4) | HIPAA 164.308(b)' },
+        { id: 'HLT-006', name: 'İnformasiya Təhlükəsizliyi Siyasəti', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1 | HIPAA 164.316' },
+        { id: 'HLT-007', name: 'ePHI Risk qiymətləndirməsi', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | HIPAA 164.308(a)(1)' },
+        // 4.1.2 İnsan resursları
+        { id: 'HLT-008', name: 'HIPAA üzrə mütəmadi personal təlimi', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | HIPAA 164.308(a)(5)' },
+        { id: 'HLT-009', name: 'İşə qəbulda məxfilik öhdəliyi imzalanması', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | HIPAA 164.530(b)' },
+        { id: 'HLT-010', name: 'İşdən çıxmada hesab deaktivasiyası', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | HIPAA 164.308(a)(3)' },
+        { id: 'HLT-011', name: 'Personal təhlükəsizlik yoxlaması', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | HIPAA 164.308(a)(3)(ii)(B)' },
+        { id: 'HLT-012', name: 'Məlumatların açıqlanmaması öhdəliyi', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | HIPAA 164.530(b)' },
+        { id: 'HLT-013', name: 'Maarifləndirici tədbirlər (Awareness)', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | HIPAA 164.308(a)(5)' },
+        // 4.1.3 Fiziki və informasiya təhlükəsizliyi
+        { id: 'HLT-014', name: 'Xəstəxanaya icazəsiz girişin qarşısı', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(1) | HIPAA 164.310(a)' },
+        { id: 'HLT-015', name: 'Tibbi cihaz aktivlərinin itirilməsinin qarşısı', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(2) | HIPAA 164.310(d)' },
+        { id: 'HLT-016', name: 'Sertifikatlı tibbi proqram/aparat vasitələri', category: 'Software', framework: 'Kİİ Qaydaları 4.1.3(3) | FDA 21 CFR Part 820' },
+        { id: 'HLT-017', name: 'Davamlı enerji (UPS tibbi avadanlıqlar)', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(4) | NFPA 99' },
+        { id: 'HLT-018', name: 'EHR giriş nəzarəti (loq-fayllar)', category: 'Access', framework: 'Kİİ Qaydaları 4.1.3(5) | HIPAA 164.312(b)' },
+        { id: 'HLT-019', name: 'ePHI şifrələməsi (konfidensiallıq)', category: 'Crypto', framework: 'Kİİ Qaydaları 4.1.3(6) | HIPAA 164.312(e)' },
+        { id: 'HLT-020', name: 'Tibbi cihaz şəbəkə seqmentasiyası (IoT)', category: 'Network', framework: 'Kİİ Qaydaları 4.1.3 | FDA Postmarket Guidance' },
+        { id: 'HLT-021', name: 'Məlumat Təsnifatı (PHI/ePHI)', category: 'Data', framework: 'Kİİ Qaydaları 4.1.3 | HIPAA 164.514' },
+        // 4.1.4 Əməliyyatların idarəedilməsi
+        { id: 'HLT-022', name: 'Klinik əməliyyat prosedurlarının sənədləşdirilməsi', category: 'Ops', framework: 'Kİİ Qaydaları 4.1.4(1) | HIPAA 164.316' },
+        { id: 'HLT-023', name: 'Tibbi sistem dəyişiklik idarəetməsi', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(2) | ISO 27001:2022 A.8.32' },
+        { id: 'HLT-024', name: 'Tibbi cihaz inventar qeydiyyatı', category: 'Assets', framework: 'Kİİ Qaydaları 4.1.4(3) | FDA MDR Requirements' },
+        { id: 'HLT-025', name: 'Tibbi sistem layihə ekspertizası', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(4) | FDA 21 CFR Part 820' },
+        { id: 'HLT-026', name: 'Tibbi Zəiflik İdarəetməsi (Patching)', category: 'Vulnerability', framework: 'Kİİ Qaydaları 4.1.4 | NISTIR 8228' },
+        { id: 'HLT-027', name: 'Elektron Tibb Qeydlərinin İdarəsi (EHR)', category: 'Data', framework: 'Kİİ Qaydaları 4.1.4 | HIPAA 164.312(c)' },
+        { id: 'HLT-028', name: 'Şəbəkə Monitorinqi (SIEM/SOC)', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.4 | ISO 27001:2022 A.8.16' },
+        // 4.1.5 Kiberinsidentlərin idarəedilməsi
+        { id: 'HLT-029', name: 'Kiberinsident idarəetmə prosedurları', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(1) | HIPAA 164.308(a)(6)' },
+        { id: 'HLT-030', name: 'Kiberinsidentlərin aşkarlanması', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.5(2) | HIPAA 164.308(a)(1)' },
+        { id: 'HLT-031', name: 'Real vaxt kommunikasiya (CERT bildirim)', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(3) | HIPAA 164.408' },
+        { id: 'HLT-032', name: 'İnsident sonrası hesabatlılıq', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(4) | HIPAA 164.308(a)(6)' },
+        { id: 'HLT-033', name: 'Milli kibermərkəzə bildirim', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5 | Kİİ Qanunu 20-4' },
+        { id: 'HLT-034', name: 'Ransomware / Tibbi Sistem Müdafiəsi', category: 'Cyber', framework: 'Kİİ Qaydaları 4.1.5 | HIPAA 164.306' },
+        { id: 'HLT-035', name: 'HIPAA Breach Notification (İhlal Bildirimi)', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5 | HIPAA 164.400-414' },
+        // 4.1.6 Fəaliyyətin fasiləsizliyi
+        { id: 'HLT-036', name: 'Fövqəladə hal strategiyası (Hospital BCP)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(1) | HIPAA 164.308(a)(7)' },
+        { id: 'HLT-037', name: 'Tibbi fəaliyyətin davamlılıq planı (DRP)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | HIPAA 164.308(a)(7)' },
+        { id: 'HLT-038', name: 'Bərpa planının illik sınağı', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | HIPAA 164.308(a)(7)' },
+        { id: 'HLT-039', name: 'Dayanma müddəti həddi (RTO < 4 saat)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(3) | ISO 27001:2022 A.5.30' },
+        { id: 'HLT-040', name: 'Tibbi data ehtiyatı (Backup 3-2-1)', category: 'Backup', framework: 'Kİİ Qaydaları 4.1.6 | HIPAA 164.308(a)(7)' },
+        { id: 'HLT-041', name: 'Alternativ enerji (UPS/Generator Xəstəxana)', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.6 | NFPA 99' },
+        { id: 'HLT-042', name: 'Teletibb Təhlükəsizliyi (Telemedicine)', category: 'Remote', framework: 'Kİİ Qaydaları 4.1.6 | HIPAA 164.312(e)' },
+        // 4.1.7 Monitorinq, audit, müdaxilə sınaqları
+        { id: 'HLT-043', name: 'Reyestrə məlumat daxil edilməsi', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(1) | HIPAA 164.316' },
+        { id: 'HLT-044', name: 'Fasiləsiz 24/7 monitorinq (SIEM)', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(2) | HIPAA 164.312(b)' },
+        { id: 'HLT-045', name: 'Daxili audit planı (illik HIPAA Audit)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(3) | HIPAA 164.308(a)(8)' },
+        { id: 'HLT-046', name: 'Penetrasiya sınaqları (ildə 1+ dəfə)', category: 'Test', framework: 'Kİİ Qaydaları 4.1.7(4) | ISO 27001:2022 A.8.8' },
+        { id: 'HLT-047', name: 'Kibermərkəzə real vaxt məlumat ötürmə', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(5) | Kİİ Qanunu 20-4' },
+        { id: 'HLT-048', name: 'Konfiqurasiya qeydiyyatı (tamlıq/əlçatanlıq)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(6) | HIPAA 164.312(c)' },
+        { id: 'HLT-049', name: 'Hüquqi uyğunluq (HIPAA/GDPR/Yerli qanun)', category: 'Compliance', framework: 'Kİİ Qaydaları 4.1.7 | HIPAA 164.306' }
     ],
     financial: [
-        { id: 'FIN-001', name: 'Banking Transaction Security', category: 'Banking', framework: 'PCI DSS 4.0 Req 4' },
-        { id: 'FIN-002', name: 'Customer PII Protection', category: 'Privacy', framework: 'GDPR Article 32' },
-        { id: 'FIN-003', name: 'Anti-Money Laundering (AML)', category: 'Compliance', framework: 'AML 5th Directive Art 14' },
-        { id: 'FIN-004', name: 'Cardholder Data Security', category: 'PCI', framework: 'PCI DSS 4.0 Req 3' },
-        { id: 'FIN-005', name: 'ATM Network Security', category: 'Physical', framework: 'PCI PIN Security V3.0 Req 1' },
-        { id: 'FIN-006', name: 'Online Banking Platform', category: 'IT', framework: 'PCI DSS 4.0 Req 6' },
-        { id: 'FIN-007', name: 'Mobile Banking Security', category: 'Mobile', framework: 'OWASP MASVS' },
-        { id: 'FIN-008', name: 'SWIFT Transactions', category: 'Banking', framework: 'SWIFT CSP 2023' },
-        { id: 'FIN-009', name: 'Fraud Detection System', category: 'Monitoring', framework: 'FFIEC Fraud Guidance' },
-        { id: 'FIN-010', name: 'Customer Identification (KYC)', category: 'KYC', framework: 'USA PATRIOT Act Sec 326' },
-        { id: 'FIN-011', name: 'Deposit Insurance', category: 'Finance', framework: 'FDIC 12 CFR Part 360' },
-        { id: 'FIN-012', name: 'Credit Scoring Systems', category: 'Data', framework: 'FCRA 15 USC 1681' },
-        { id: 'FIN-013', name: 'Investment Platforms', category: 'Finance', framework: 'SEC Regulation SCI' },
-        { id: 'FIN-014', name: 'Cryptocurrency Operations', category: 'Crypto', framework: 'FinCEN Guidance 2019' },
-        { id: 'FIN-015', name: 'Insurance Databases', category: 'Data', framework: 'NAIC MDL-668' },
-        { id: 'FIN-016', name: 'SOX Compliance', category: 'Audit', framework: 'SOX Section 404' },
-        { id: 'FIN-017', name: 'Regulatory Reporting', category: 'Compliance', framework: 'BASEL III Pillar 3' },
-        { id: 'FIN-018', name: 'Liquidity Management', category: 'Finance', framework: 'BASEL III LCR' },
-        { id: 'FIN-019', name: 'Risk Management', category: 'Risk', framework: 'ISO 31000:2018' },
-        { id: 'FIN-020', name: 'Trading Platforms', category: 'Finance', framework: 'SEC Rule 15c3-5' },
-        { id: 'FIN-021', name: 'Payment Gateway Security', category: 'Payments', framework: 'PCI DSS 4.0 Req 3' },
-        { id: 'FIN-022', name: 'ACH Transfer Security', category: 'Payments', framework: 'NACHA Operating Rules 2023' },
-        { id: 'FIN-023', name: 'Wire Transfer Security', category: 'Payments', framework: 'Fedwire Security Req' },
-        { id: 'FIN-024', name: 'Merchant Services', category: 'Payments', framework: 'PCI DSS 4.0 Req 10' },
-        { id: 'FIN-025', name: 'Point of Sale (POS)', category: 'Physical', framework: 'PCI P2PE Standard V3.0' },
-        { id: 'FIN-026', name: 'Contactless Payments', category: 'Payments', framework: 'EMV Contactless Spec' },
-        { id: 'FIN-027', name: 'Digital Wallets', category: 'Mobile', framework: 'PCI Tokenization Guidelines' },
-        { id: 'FIN-028', name: 'Open Banking APIs', category: 'API', framework: 'PSD2 Article 66' },
-        { id: 'FIN-029', name: 'Robo-Advisor Security', category: 'Automated', framework: 'SEC Guidance 2017' },
-        { id: 'FIN-030', name: 'High-Frequency Trading', category: 'Trading', framework: 'CFTC Reg 1.73' },
-        { id: 'FIN-031', name: 'Dark Pool Security', category: 'Trading', framework: 'SEC Regulation ATS' },
-        { id: 'FIN-032', name: 'Derivatives Trading', category: 'Trading', framework: 'CFTC Part 39' },
-        { id: 'FIN-033', name: 'Commodities Trading', category: 'Trading', framework: 'CFTC Part 150' },
-        { id: 'FIN-034', name: 'Foreign Exchange (FX)', category: 'FX', framework: 'FX Global Code (BIS)' },
-        { id: 'FIN-035', name: 'Wealth Management', category: 'Finance', framework: 'SEC Regulation BI' }
+        // 4.1.1 Ümumi idarəetmə və risk
+        { id: 'FIN-001', name: 'Təhlükəsizlik prosedurlarının hazırlanması', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | PCI DSS 4.0 Req 12' },
+        { id: 'FIN-002', name: 'Reyestrdə prosedur yerləşdirilməsi', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | PCI DSS 4.0 Req 12' },
+        { id: 'FIN-003', name: 'Maliyyə riskinin qiymətləndirilməsi', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | BASEL III Pillar 2' },
+        { id: 'FIN-004', name: 'Səlahiyyət bölgüsü (CISO/CCO)', category: 'Management', framework: 'Kİİ Qaydaları 4.1.1(3) | SOX 404' },
+        { id: 'FIN-005', name: 'Üçüncü tərəf müqavilə tələbləri (Fintech)', category: 'Supplier', framework: 'Kİİ Qaydaları 4.1.1(4) | PCI DSS 4.0 Req 12.8' },
+        { id: 'FIN-006', name: 'İnformasiya Təhlükəsizliyi Siyasəti', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1 | GLBA 501(b)' },
+        { id: 'FIN-007', name: 'Maliyyə İnfrasruktur Risk Qiymətləndirməsi', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | ISO 31000:2018' },
+        // 4.1.2 İnsan resursları
+        { id: 'FIN-008', name: 'Aidiyyəti şəxslərin mütəmadi təlimi', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | PCI DSS 4.0 Req 12.6' },
+        { id: 'FIN-009', name: 'İşə qəbulda təhlükəsizlik öhdəliyi', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | GLBA 501(b)' },
+        { id: 'FIN-010', name: 'İşdən çıxmada hesab deaktivasiyası', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | PCI DSS 4.0 Req 8' },
+        { id: 'FIN-011', name: 'Personal təhlükəsizlik yoxlaması (KYC daxili)', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | FFIEC BSA/AML' },
+        { id: 'FIN-012', name: 'Məlumatların açıqlanmaması öhdəliyi', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | GDPR Art.32' },
+        { id: 'FIN-013', name: 'Maarifləndirici tədbirlər (Fişinq simulyasiya)', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | PCI DSS 4.0 Req 12.6' },
+        // 4.1.3 Fiziki və informasiya təhlükəsizliyi
+        { id: 'FIN-014', name: 'Bank binasına icazəsiz girişin qarşısı', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(1) | PCI DSS 4.0 Req 9' },
+        { id: 'FIN-015', name: 'Bank aktivlərinin qorunması (ATM/POS)', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(2) | PCI DSS 4.0 Req 9' },
+        { id: 'FIN-016', name: 'Sertifikatlı maliyyə proqram/aparat vasitələri', category: 'Software', framework: 'Kİİ Qaydaları 4.1.3(3) | PCI DSS 4.0 Req 6' },
+        { id: 'FIN-017', name: 'Davamlı enerji (UPS data mərkəz)', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(4) | FFIEC IT Handbook' },
+        { id: 'FIN-018', name: 'Giriş nəzarəti (loq-fayllar, MFA)', category: 'Access', framework: 'Kİİ Qaydaları 4.1.3(5) | PCI DSS 4.0 Req 8' },
+        { id: 'FIN-019', name: 'Ödəniş məlumatlarının şifrələnməsi (P2PE)', category: 'Crypto', framework: 'Kİİ Qaydaları 4.1.3(6) | PCI DSS 4.0 Req 4' },
+        { id: 'FIN-020', name: 'Fırıldaq Aşkarlama Sistemi (Fraud Detection)', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.3 | FFIEC Fraud Guidance' },
+        { id: 'FIN-021', name: 'Müştəri PII Məlumat Qorunması', category: 'Data', framework: 'Kİİ Qaydaları 4.1.3 | GDPR Art.32 | GLBA' },
+        // 4.1.4 Əməliyyatların idarəedilməsi
+        { id: 'FIN-022', name: 'Bank əməliyyat prosedurlarının sənədləşdirilməsi', category: 'Ops', framework: 'Kİİ Qaydaları 4.1.4(1) | FFIEC IT Handbook' },
+        { id: 'FIN-023', name: 'Dəyişikliklərin idarəedilməsi (Change Mgmt)', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(2) | PCI DSS 4.0 Req 6' },
+        { id: 'FIN-024', name: 'Maliyyə aktivlərinin inventar qeydiyyatı', category: 'Assets', framework: 'Kİİ Qaydaları 4.1.4(3) | SOX 302' },
+        { id: 'FIN-025', name: 'Bank sistem layihə ekspertizası', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(4) | FFIEC IS Booklet' },
+        { id: 'FIN-026', name: 'Zəiflik İdarəetməsi (Patching/Scanning)', category: 'Vulnerability', framework: 'Kİİ Qaydaları 4.1.4 | PCI DSS 4.0 Req 11' },
+        { id: 'FIN-027', name: 'SWIFT Ödəniş Sistemi Təhlükəsizliyi', category: 'Banking', framework: 'Kİİ Qaydaları 4.1.4 | SWIFT CSP 2023' },
+        { id: 'FIN-028', name: 'API Təhlükəsizliyi (Open Banking/PSD2)', category: 'API', framework: 'Kİİ Qaydaları 4.1.4 | PSD2 Art.66' },
+        // 4.1.5 Kiberinsidentlərin idarəedilməsi
+        { id: 'FIN-029', name: 'Kiberinsident idarəetmə prosedurları', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(1) | FFIEC Incident Guidance' },
+        { id: 'FIN-030', name: 'Bank kiberinsidentlərinin aşkarlanması (SIEM)', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.5(2) | FFIEC IS Booklet' },
+        { id: 'FIN-031', name: 'Real vaxt kommunikasiya (FinCERT bildirim)', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(3) | FinCERT Guidelines' },
+        { id: 'FIN-032', name: 'İnsident sonrası hesabatlılıq', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(4) | SEC Cyber Disclosure' },
+        { id: 'FIN-033', name: 'Milli kibermərkəzə bildirim', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5 | Kİİ Qanunu 20-4' },
+        { id: 'FIN-034', name: 'AML / Maliyyə Cinayəti Aşkarlama', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.5 | FATF Rec.15' },
+        { id: 'FIN-035', name: 'DDoS / Bank Xidmət Dayanması Müdafiəsi', category: 'Cyber', framework: 'Kİİ Qaydaları 4.1.5 | FFIEC DDoS Guidance' },
+        // 4.1.6 Fəaliyyətin fasiləsizliyi
+        { id: 'FIN-036', name: 'Fövqəladə hal strategiyası (Bank BCP)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(1) | FFIEC BCP Booklet' },
+        { id: 'FIN-037', name: 'Bank fəaliyyətinin davamlılıq planı (DRP)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | FFIEC BCP Booklet' },
+        { id: 'FIN-038', name: 'Bərpa planının illik sınağı', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | FFIEC BCP Booklet' },
+        { id: 'FIN-039', name: 'Dayanma müddəti həddi (RTO/RPO)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(3) | FFIEC BCP' },
+        { id: 'FIN-040', name: 'Maliyyə Məlumat Ehtiyatı (Backup)', category: 'Backup', framework: 'Kİİ Qaydaları 4.1.6 | FFIEC IS Booklet' },
+        { id: 'FIN-041', name: 'Alternativ Data Mərkəzi (Hot Standby)', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.6 | FFIEC BCP Booklet' },
+        { id: 'FIN-042', name: 'Müştəri Xidmətlərinin Davamlılığı (24/7)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6 | FFIEC BCP' },
+        // 4.1.7 Monitorinq, audit, müdaxilə sınaqları
+        { id: 'FIN-043', name: 'Reyestrə məlumat daxil edilməsi', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(1) | SOX 302/404' },
+        { id: 'FIN-044', name: 'Fasiləsiz 24/7 monitorinq (SIEM/loq)', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(2) | PCI DSS 4.0 Req 10' },
+        { id: 'FIN-045', name: 'Daxili audit planı (illik SOX audit)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(3) | SOX 404' },
+        { id: 'FIN-046', name: 'Penetrasiya sınaqları (ildə 1+ dəfə)', category: 'Test', framework: 'Kİİ Qaydaları 4.1.7(4) | PCI DSS 4.0 Req 11.4' },
+        { id: 'FIN-047', name: 'Kibermərkəzə real vaxt məlumat ötürmə', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(5) | Kİİ Qanunu 20-4' },
+        { id: 'FIN-048', name: 'Konfiqurasiya qeydiyyatı (tamlıq/əlçatanlıq)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(6) | PCI DSS 4.0 Req 10' },
+        { id: 'FIN-049', name: 'Tənzimləyici Hesabatlılıq (Basel/SEC/FFIEC)', category: 'Compliance', framework: 'Kİİ Qaydaları 4.1.7 | BASEL III Pillar 3' }
     ],
     energy: [
-        { id: 'NRG-001', name: 'Grid Control System (SCADA)', category: 'SCADA', framework: 'NERC CIP-005-6' },
-        { id: 'NRG-002', name: 'Transformer Security', category: 'Physical', framework: 'NERC CIP-006-6' },
-        { id: 'NRG-003', name: 'Power Plant Security', category: 'ICS', framework: 'NERC CIP-007-6' },
-        { id: 'NRG-004', name: 'Load Balancing', category: 'Ops', framework: 'NERC PRC-005-6' },
-        { id: 'NRG-005', name: 'Renewable Energy Systems', category: 'Energy', framework: 'IEC 61400-25' },
-        { id: 'NRG-006', name: 'SCADA Security (Firewalls)', category: 'SCADA', framework: 'NERC CIP-005-6' },
-        { id: 'NRG-007', name: 'Transmission Lines', category: 'Physical', framework: 'NERC CIP-014-2' },
-        { id: 'NRG-008', name: 'Substation Security', category: 'Physical', framework: 'NERC CIP-006-6' },
-        { id: 'NRG-009', name: 'Energy Market Operations', category: 'Finance', framework: 'FERC 18 CFR 35' },
-        { id: 'NRG-010', name: 'Grid Monitoring (PMU)', category: 'Monitoring', framework: 'NERC CIP-008-6' },
-        { id: 'NRG-011', name: 'Emergency Plan (Black Start)', category: 'BCM', framework: 'NERC CIP-009-6' },
-        { id: 'NRG-012', name: 'Cyber Attack Protection', category: 'Cyber', framework: 'NERC CIP-005-6' },
-        { id: 'NRG-013', name: 'Personnel Security', category: 'HR', framework: 'NERC CIP-004-6' },
-        { id: 'NRG-014', name: 'Supply Chain Security', category: 'Supply Chain', framework: 'NERC CIP-013-2' },
-        { id: 'NRG-015', name: 'Physical Access Control', category: 'Physical', framework: 'NERC CIP-006-6' },
-        { id: 'NRG-016', name: 'Vulnerability Management', category: 'Vulnerability', framework: 'NERC CIP-010-3' },
-        { id: 'NRG-017', name: 'Incident Response', category: 'Incident', framework: 'NERC CIP-008-6' },
-        { id: 'NRG-018', name: 'Recovery Plans (RTO/RPO)', category: 'BCM', framework: 'NERC CIP-009-6' },
-        { id: 'NRG-019', name: 'Audit and Reporting', category: 'Audit', framework: 'NERC CIP-014-2' },
-        { id: 'NRG-020', name: 'Training and Awareness', category: 'Training', framework: 'NERC CIP-004-6' },
-        { id: 'NRG-021', name: 'Configuration Management', category: 'Config', framework: 'NERC CIP-010-3' },
-        { id: 'NRG-022', name: 'Network Segmentation', category: 'Network', framework: 'NERC CIP-005-6' },
-        { id: 'NRG-023', name: 'Critical Asset Identification', category: 'Assets', framework: 'NERC CIP-002-5.1a' },
-        { id: 'NRG-024', name: 'Electronic Perimeter', category: 'Network', framework: 'NERC CIP-005-6' },
-        { id: 'NRG-025', name: 'System Updates (Patching)', category: 'Systems', framework: 'NERC CIP-007-6' },
-        { id: 'NRG-026', name: 'Smart Grid Security', category: 'Grid', framework: 'NISTIR 7628' },
-        { id: 'NRG-027', name: 'AMI Security (Meters)', category: 'Meters', framework: 'NISTIR 7628' },
-        { id: 'NRG-028', name: 'Distributed Energy Resources', category: 'DER', framework: 'IEEE 1547.1' },
-        { id: 'NRG-029', name: 'Microgrid Security', category: 'Grid', framework: 'IEEE 2030.7' },
-        { id: 'NRG-030', name: 'Energy Storage Systems', category: 'Storage', framework: 'UL 9540' },
-        { id: 'NRG-031', name: 'Nuclear Plant Security', category: 'Nuclear', framework: 'NRC RG 5.71' },
-        { id: 'NRG-032', name: 'Hydroelectric Security', category: 'Hydro', framework: 'FERC Dam Safety' },
-        { id: 'NRG-033', name: 'Wind Farm Security', category: 'Wind', framework: 'IEC 61400-25' },
-        { id: 'NRG-034', name: 'Solar Farm Security', category: 'Solar', framework: 'UL 1741' },
-        { id: 'NRG-035', name: 'Geothermal Security', category: 'Geothermal', framework: 'DOE Geothermal Guide' }
+        // 4.1.1 Ümumi idarəetmə və risk
+        { id: 'NRG-001', name: 'Təhlükəsizlik prosedurlarının hazırlanması', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | NERC CIP-003-8' },
+        { id: 'NRG-002', name: 'Reyestrdə prosedur yerləşdirilməsi', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | NERC CIP-003-8' },
+        { id: 'NRG-003', name: 'Enerji sistemi riskinin qiymətləndirilməsi', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | NERC CIP-002-5.1a' },
+        { id: 'NRG-004', name: 'Səlahiyyət bölgüsü (CIP Baş Məsul Şəxs)', category: 'Management', framework: 'Kİİ Qaydaları 4.1.1(3) | NERC CIP-003-8' },
+        { id: 'NRG-005', name: 'Üçüncü tərəf müqavilə tələbləri (Vendor)', category: 'Supplier', framework: 'Kİİ Qaydaları 4.1.1(4) | NERC CIP-013-2' },
+        { id: 'NRG-006', name: 'İnformasiya Təhlükəsizliyi Siyasəti', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1 | NERC CIP-003-8' },
+        { id: 'NRG-007', name: 'BES Cyber System Risk Qiymətləndirməsi', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | NERC CIP-002-5.1a' },
+        // 4.1.2 İnsan resursları
+        { id: 'NRG-008', name: 'CIP üzrə mütəmadi personal təlimi', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | NERC CIP-004-6' },
+        { id: 'NRG-009', name: 'İşə qəbulda təhlükəsizlik öhdəliyi imzalanması', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | NERC CIP-004-6' },
+        { id: 'NRG-010', name: 'İşdən çıxmada hesab deaktivasiyası', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | NERC CIP-004-6' },
+        { id: 'NRG-011', name: 'Personal yoxlama (Risk-based screening)', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | NERC CIP-004-6' },
+        { id: 'NRG-012', name: 'Məlumatların açıqlanmaması öhdəliyi', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | NERC CIP-004-6' },
+        { id: 'NRG-013', name: 'Maarifləndirici tədbirlər (ICS/OT Security)', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | NERC CIP-004-6' },
+        // 4.1.3 Fiziki və informasiya təhlükəsizliyi
+        { id: 'NRG-014', name: 'Substansiyaya icazəsiz girişin qarşısı (PSP)', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(1) | NERC CIP-006-6' },
+        { id: 'NRG-015', name: 'Transformer/avadanlıq itirilməsinin qarşısı', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(2) | NERC CIP-006-6' },
+        { id: 'NRG-016', name: 'Sertifikatlı ICS/SCADA proqram vasitələri', category: 'Software', framework: 'Kİİ Qaydaları 4.1.3(3) | IEC 62443-3-3' },
+        { id: 'NRG-017', name: 'Davamlı enerji (UPS/Generator substansiya)', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(4) | NERC CIP-006-6' },
+        { id: 'NRG-018', name: 'SCADA giriş nəzarəti (loq-fayllar, ESP)', category: 'Access', framework: 'Kİİ Qaydaları 4.1.3(5) | NERC CIP-005-6' },
+        { id: 'NRG-019', name: 'OT/IT şəbəkə konfidensiallığı qorunması', category: 'Crypto', framework: 'Kİİ Qaydaları 4.1.3(6) | IEC 62443-3-3' },
+        { id: 'NRG-020', name: 'SCADA/ICS Şəbəkə Seqmentasiyası', category: 'Network', framework: 'Kİİ Qaydaları 4.1.3 | NERC CIP-005-6' },
+        { id: 'NRG-021', name: 'Kritik Aktiv İdentifikasiyası (BES Cyber)', category: 'Assets', framework: 'Kİİ Qaydaları 4.1.3 | NERC CIP-002-5.1a' },
+        // 4.1.4 Əməliyyatların idarəedilməsi
+        { id: 'NRG-022', name: 'Enerji əməliyyat prosedurlarının sənədləşdirilməsi', category: 'Ops', framework: 'Kİİ Qaydaları 4.1.4(1) | NERC CIP-007-6' },
+        { id: 'NRG-023', name: 'SCADA sistem dəyişiklik idarəetməsi', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(2) | NERC CIP-010-3' },
+        { id: 'NRG-024', name: 'Enerji Sistemi Aktivlər Inventarı', category: 'Assets', framework: 'Kİİ Qaydaları 4.1.4(3) | NERC CIP-002-5.1a' },
+        { id: 'NRG-025', name: 'Enerji sistem layihə ekspertizası', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(4) | NERC CIP-010-3' },
+        { id: 'NRG-026', name: 'ICS/OT Zəiflik İdarəetməsi (Patching)', category: 'Vulnerability', framework: 'Kİİ Qaydaları 4.1.4 | NERC CIP-007-6' },
+        { id: 'NRG-027', name: 'Smart Grid / AMI Təhlükəsizliyi', category: 'Grid', framework: 'Kİİ Qaydaları 4.1.4 | NISTIR 7628' },
+        { id: 'NRG-028', name: 'Şəbəkə Monitorinqi (OT/IT konvergensiya)', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.4 | NERC CIP-007-6' },
+        // 4.1.5 Kiberinsidentlərin idarəedilməsi
+        { id: 'NRG-029', name: 'Kiberinsident idarəetmə prosedurları', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(1) | NERC CIP-008-6' },
+        { id: 'NRG-030', name: 'Enerji kiberinsidentlərinin aşkarlanması', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.5(2) | NERC CIP-008-6' },
+        { id: 'NRG-031', name: 'Real vaxt kommunikasiya (E-ISAC bildirim)', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(3) | NERC CIP-008-6' },
+        { id: 'NRG-032', name: 'İnsident sonrası hesabatlılıq (Post-Incident)', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(4) | NERC CIP-008-6' },
+        { id: 'NRG-033', name: 'Milli kibermərkəzə bildirim', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5 | Kİİ Qanunu 20-4' },
+        { id: 'NRG-034', name: 'ICS/SCADA Kiberhücum Müdafiəsi', category: 'Cyber', framework: 'Kİİ Qaydaları 4.1.5 | IEC 62443-3-3' },
+        { id: 'NRG-035', name: 'Grid Attack Threat Intelligence', category: 'Cyber', framework: 'Kİİ Qaydaları 4.1.5 | NERC CIP-015' },
+        // 4.1.6 Fəaliyyətin fasiləsizliyi
+        { id: 'NRG-036', name: 'Fövqəladə hal strategiyası (Black Start BCP)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(1) | NERC CIP-009-6' },
+        { id: 'NRG-037', name: 'Enerji fəaliyyətin davamlılıq planı (DRP)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | NERC CIP-009-6' },
+        { id: 'NRG-038', name: 'Bərpa planının illik sınağı (Black Start Test)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | NERC CIP-009-6' },
+        { id: 'NRG-039', name: 'Dayanma müddəti həddi (RTO/RPO)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(3) | NERC CIP-009-6' },
+        { id: 'NRG-040', name: 'SCADA Data Ehtiyatı (Airgap Backup)', category: 'Backup', framework: 'Kİİ Qaydaları 4.1.6 | NERC CIP-009-6' },
+        { id: 'NRG-041', name: 'Alternativ Enerji Mənbəyi (Substation Gen.)', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.6 | NERC CIP-006-6' },
+        { id: 'NRG-042', name: 'Nüvə/Bərpa Olunan Enerji Obyekti Müdafiəsi', category: 'Systems', framework: 'Kİİ Qaydaları 4.1.6 | NRC RG 5.71' },
+        // 4.1.7 Monitorinq, audit, müdaxilə sınaqları
+        { id: 'NRG-043', name: 'Reyestrə məlumat daxil edilməsi', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(1) | NERC CIP-014-2' },
+        { id: 'NRG-044', name: 'Fasiləsiz 24/7 monitorinq (EMS/SCADA loq)', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(2) | NERC CIP-007-6' },
+        { id: 'NRG-045', name: 'Daxili audit planı (illik CIP Compliance)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(3) | NERC CIP-014-2' },
+        { id: 'NRG-046', name: 'Penetrasiya sınaqları (OT/IT ildə 1+)', category: 'Test', framework: 'Kİİ Qaydaları 4.1.7(4) | NIST SP 800-82' },
+        { id: 'NRG-047', name: 'Kibermərkəzə real vaxt məlumat ötürmə', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(5) | Kİİ Qanunu 20-4' },
+        { id: 'NRG-048', name: 'Konfiqurasiya bazası qeydiyyatı (CMDB)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(6) | NERC CIP-010-3' },
+        { id: 'NRG-049', name: 'NERC CIP Tənzimləyici Uyğunluq Hesabatı', category: 'Compliance', framework: 'Kİİ Qaydaları 4.1.7 | NERC CIP-014-2' }
     ],
     transport: [
-        { id: 'TRN-001', name: 'Railway Control System', category: 'SCADA', framework: 'CENELEC EN 50159' },
-        { id: 'TRN-002', name: 'Air Traffic Control', category: 'Aviation', framework: 'ICAO Annex 10' },
-        { id: 'TRN-003', name: 'Port Security (ISPS)', category: 'Maritime', framework: 'ISPS Code Part A' },
-        { id: 'TRN-004', name: 'Metro Security', category: 'Physical', framework: 'APTA SS-ISS-RP-001' },
-        { id: 'TRN-005', name: 'Traffic Cameras', category: 'Video', framework: 'ISO 27001:2022 A.8.10' },
-        { id: 'TRN-006', name: 'Traffic Management', category: 'SCADA', framework: 'NIST SP 800-82' },
-        { id: 'TRN-007', name: 'Ticketing Systems', category: 'Finance', framework: 'PCI DSS 4.0 Req 3' },
-        { id: 'TRN-008', name: 'Passenger Information', category: 'Data', framework: 'GDPR Article 32' },
-        { id: 'TRN-009', name: 'Cargo Tracking', category: 'Logistics', framework: 'ISO 28000' },
-        { id: 'TRN-010', name: 'Navigation Systems (GPS)', category: 'Navigation', framework: 'IMO A.915(22)' },
-        { id: 'TRN-011', name: 'Autonomous Vehicles', category: 'AV', framework: 'ISO 21434' },
-        { id: 'TRN-012', name: 'Connected Vehicles (V2X)', category: 'V2X', framework: 'IEEE 1609.2' },
-        { id: 'TRN-013', name: 'Fleet Management', category: 'Logistics', framework: 'FMCSA ELD Req' },
-        { id: 'TRN-014', name: 'Traffic Signals', category: 'Infrastructure', framework: 'NTCIP 1103' },
-        { id: 'TRN-015', name: 'Bridge Monitoring', category: 'Infrastructure', framework: 'FHWA Bridge Guide' },
-        { id: 'TRN-016', name: 'Tunnel Systems', category: 'Infrastructure', framework: 'NFPA 502' },
-        { id: 'TRN-017', name: 'Airport Security', category: 'Aviation', framework: 'ICAO Annex 17' },
-        { id: 'TRN-018', name: 'Baggage Handling', category: 'Logistics', framework: 'IATA Res 753' },
-        { id: 'TRN-019', name: 'In-Flight Entertainment', category: 'Aviation', framework: 'FAA IFE Guide' },
-        { id: 'TRN-020', name: 'Aircraft Systems', category: 'Aviation', framework: 'RTCA DO-326A' },
-        { id: 'TRN-021', name: 'Ship Navigation', category: 'Maritime', framework: 'IMO MSC.1/Circ.1587' },
-        { id: 'TRN-022', name: 'Vessel Tracking (AIS)', category: 'Maritime', framework: 'IALA AIS Guide' },
-        { id: 'TRN-023', name: 'Port Operations', category: 'Maritime', framework: 'ISPS Code Part B' },
-        { id: 'TRN-024', name: 'Container Security', category: 'Maritime', framework: 'ISO 18185' },
-        { id: 'TRN-025', name: 'Rail Signaling', category: 'Rail', framework: 'CENELEC EN 50129' },
-        { id: 'TRN-026', name: 'Train Control (PTC)', category: 'Rail', framework: '49 CFR Part 236' },
-        { id: 'TRN-027', name: 'Subway Systems', category: 'Rail', framework: 'NFPA 130' },
-        { id: 'TRN-028', name: 'Bus Systems', category: 'Road', framework: 'FMCSA Bus Guide' },
-        { id: 'TRN-029', name: 'Ride Sharing', category: 'Road', framework: 'Local TNC Regs' },
-        { id: 'TRN-030', name: 'Logistics Platforms', category: 'Logistics', framework: 'ISO 28000' },
-        { id: 'TRN-031', name: 'Drone Delivery', category: 'UAV', framework: 'FAA Part 135' },
-        { id: 'TRN-032', name: 'Hyperloop Systems', category: 'Future', framework: 'Hyperloop Safety Case' },
-        { id: 'TRN-033', name: 'Space Launch', category: 'Space', framework: 'FAA Part 400' },
-        { id: 'TRN-034', name: 'Satellite Navigation', category: 'Space', framework: 'GPS ICD' },
-        { id: 'TRN-035', name: 'Emergency Vehicles', category: 'Ops', framework: 'NFPA 1901' }
+        // 4.1.1 Ümumi idarəetmə və risk
+        { id: 'TRN-001', name: 'Təhlükəsizlik prosedurlarının hazırlanması', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | ICAO Annex 17' },
+        { id: 'TRN-002', name: 'Reyestrdə prosedur yerləşdirilməsi', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | ICAO Annex 17' },
+        { id: 'TRN-003', name: 'Nəqliyyat sistemi risk qiymətləndirməsi', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | ICAO Annex 17' },
+        { id: 'TRN-004', name: 'Səlahiyyət bölgüsü (Nəqliyyat Təhlükəsizlik Məsul)', category: 'Management', framework: 'Kİİ Qaydaları 4.1.1(3) | ISPS Code Part A' },
+        { id: 'TRN-005', name: 'Üçüncü tərəf müqavilə tələbləri', category: 'Supplier', framework: 'Kİİ Qaydaları 4.1.1(4) | ISO 28000' },
+        { id: 'TRN-006', name: 'İnformasiya Təhlükəsizliyi Siyasəti', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1 | ISO 27001:2022 A.5.1' },
+        { id: 'TRN-007', name: 'Nəqliyyat İnfrastruktur Risk Qiymətləndirməsi', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | TSA Guidelines' },
+        // 4.1.2 İnsan resursları
+        { id: 'TRN-008', name: 'Nəqliyyat personalının mütəmadi təlimi', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | ICAO Annex 17' },
+        { id: 'TRN-009', name: 'İşə qəbulda təhlükəsizlik öhdəliyi', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | ISPS Code Part A' },
+        { id: 'TRN-010', name: 'İşdən çıxmada hesab deaktivasiyası', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | ISO 27001:2022 A.6.5' },
+        { id: 'TRN-011', name: 'Personal yoxlama (Background Check)', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | TSA Security Guidelines' },
+        { id: 'TRN-012', name: 'Məlumatların açıqlanmaması öhdəliyi', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | ISO 27001:2022 A.6.2' },
+        { id: 'TRN-013', name: 'Maarifləndirici tədbirlər (Nəqliyyat Security)', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | ICAO Annex 17' },
+        // 4.1.3 Fiziki və informasiya təhlükəsizliyi
+        { id: 'TRN-014', name: 'Nəqliyyat hubs/terminallarına girişin nəzarəti', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(1) | ISPS Code Part A' },
+        { id: 'TRN-015', name: 'Nəqliyyat aktivlərinin qorunması', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(2) | ISO 28000' },
+        { id: 'TRN-016', name: 'Sertifikatlı nəqliyyat idarəetmə proqramları', category: 'Software', framework: 'Kİİ Qaydaları 4.1.3(3) | RTCA DO-326A' },
+        { id: 'TRN-017', name: 'Davamlı enerji (ATC/Dəmir yolu UPS)', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(4) | CENELEC EN 50159' },
+        { id: 'TRN-018', name: 'Nəqliyyat sistemi giriş loqları', category: 'Access', framework: 'Kİİ Qaydaları 4.1.3(5) | ISO 27001:2022 A.8.15' },
+        { id: 'TRN-019', name: 'Sərnişin/yük məlumatının şifrələnməsi', category: 'Crypto', framework: 'Kİİ Qaydaları 4.1.3(6) | GDPR Art.32' },
+        { id: 'TRN-020', name: 'Hava Trafik İdarəetmə Sistemi (ATC) Müdafiəsi', category: 'Systems', framework: 'Kİİ Qaydaları 4.1.3 | ICAO Annex 10' },
+        { id: 'TRN-021', name: 'Dəmir Yolu SCADA/Siqnalizasiya Müdafiəsi', category: 'SCADA', framework: 'Kİİ Qaydaları 4.1.3 | CENELEC EN 50159' },
+        // 4.1.4 Əməliyyatların idarəedilməsi
+        { id: 'TRN-022', name: 'Nəqliyyat əməliyyat prosedurlarının sənədləşdirilməsi', category: 'Ops', framework: 'Kİİ Qaydaları 4.1.4(1) | ICAO Annex 17' },
+        { id: 'TRN-023', name: 'Dəyişikliklərin idarəedilməsi (ATC/Rail)', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(2) | CENELEC EN 50128' },
+        { id: 'TRN-024', name: 'Nəqliyyat aktivlər inventarı', category: 'Assets', framework: 'Kİİ Qaydaları 4.1.4(3) | ISO 28000' },
+        { id: 'TRN-025', name: 'Nəqliyyat sistem layihə ekspertizası', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(4) | RTCA DO-326A' },
+        { id: 'TRN-026', name: 'Nəqliyyat Sistemi Zəiflik İdarəetməsi', category: 'Vulnerability', framework: 'Kİİ Qaydaları 4.1.4 | ISO 21434' },
+        { id: 'TRN-027', name: 'Avtomatik Nəqliyyat / V2X Kibertəhlükəsizliyi', category: 'AV', framework: 'Kİİ Qaydaları 4.1.4 | ISO 21434' },
+        { id: 'TRN-028', name: 'Yük İzləmə / Port Sistemi Təhlükəsizliyi', category: 'Logistics', framework: 'Kİİ Qaydaları 4.1.4 | ISPS Code' },
+        // 4.1.5 Kiberinsidentlərin idarəedilməsi
+        { id: 'TRN-029', name: 'Kiberinsident idarəetmə prosedurları', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(1) | ICAO Annex 17' },
+        { id: 'TRN-030', name: 'Nəqliyyat kiberinsidentlərinin aşkarlanması', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.5(2) | ENISA Transport' },
+        { id: 'TRN-031', name: 'Real vaxt kommunikasiya (CERT bildirim)', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(3) | ICAO Annex 17' },
+        { id: 'TRN-032', name: 'İnsident sonrası hesabatlılıq', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(4) | ICAO Annex 17' },
+        { id: 'TRN-033', name: 'Milli kibermərkəzə bildirim', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5 | Kİİ Qanunu 20-4' },
+        { id: 'TRN-034', name: 'GPS Spoofing / Naviqasiya Hücumu Müdafiəsi', category: 'Cyber', framework: 'Kİİ Qaydaları 4.1.5 | IMO MSC-FAL.1' },
+        { id: 'TRN-035', name: 'Hava limanı / Liman Kibertəhlükəsizlik Hadisə', category: 'Cyber', framework: 'Kİİ Qaydaları 4.1.5 | ICAO Annex 17' },
+        // 4.1.6 Fəaliyyətin fasiləsizliyi
+        { id: 'TRN-036', name: 'Fövqəladə hal strategiyası (Transport BCP)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(1) | ICAO Annex 17' },
+        { id: 'TRN-037', name: 'Nəqliyyat fəaliyyətin davamlılıq planı', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | ICAO Annex 17' },
+        { id: 'TRN-038', name: 'Bərpa planının illik sınağı', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | ISO 27001:2022 A.5.30' },
+        { id: 'TRN-039', name: 'Dayanma müddəti həddi (RTO/RPO)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(3) | ICAO Annex 17' },
+        { id: 'TRN-040', name: 'Nəqliyyat Sistemi Data Ehtiyatı (Backup)', category: 'Backup', framework: 'Kİİ Qaydaları 4.1.6 | ISO 27001:2022 A.8.13' },
+        { id: 'TRN-041', name: 'Alternativ ATC/Dəmir Yolu İdarəetmə Mərkəzi', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.6 | ICAO Annex 11' },
+        { id: 'TRN-042', name: 'Fövqəladə Nəqliyyat Əlaqə Sistemi (Backup)', category: 'Comms', framework: 'Kİİ Qaydaları 4.1.6 | ICAO Annex 10' },
+        // 4.1.7 Monitorinq, audit, müdaxilə sınaqları
+        { id: 'TRN-043', name: 'Reyestrə məlumat daxil edilməsi', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(1) | ICAO Annex 17' },
+        { id: 'TRN-044', name: 'Fasiləsiz 24/7 monitorinq (SIEM/loq)', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(2) | ENISA Transport' },
+        { id: 'TRN-045', name: 'Daxili audit planı (illik)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(3) | ICAO Annex 17' },
+        { id: 'TRN-046', name: 'Penetrasiya sınaqları (ildə 1+ dəfə)', category: 'Test', framework: 'Kİİ Qaydaları 4.1.7(4) | ENISA Transport' },
+        { id: 'TRN-047', name: 'Kibermərkəzə real vaxt məlumat ötürmə', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(5) | Kİİ Qanunu 20-4' },
+        { id: 'TRN-048', name: 'Konfiqurasiya qeydiyyatı (CMDB)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(6) | ISO 27001:2022 A.8.9' },
+        { id: 'TRN-049', name: 'Tənzimləyici Uyğunluq (ICAO/IMO/TSA)', category: 'Compliance', framework: 'Kİİ Qaydaları 4.1.7 | ICAO Annex 17' }
     ],
     it: [
-        { id: 'IT-001', name: 'Data Center Security', category: 'Physical', framework: 'ISO 27001:2022 A.7.1' },
-        { id: 'IT-002', name: 'Network Infrastructure', category: 'Network', framework: 'ISO 27001:2022 A.8.20' },
-        { id: 'IT-003', name: 'Server Security', category: 'Server', framework: 'ISO 27001:2022 A.8.9' },
-        { id: 'IT-004', name: 'Database Security', category: 'DB', framework: 'ISO 27001:2022 A.8.10' },
-        { id: 'IT-005', name: 'Cloud Services', category: 'Cloud', framework: 'ISO 27001:2022 A.5.23' },
-        { id: 'IT-006', name: 'Network Monitoring (SIEM)', category: 'Monitoring', framework: 'ISO 27001:2022 A.8.15' },
-        { id: 'IT-007', name: 'Vulnerability Scanning', category: 'Vulnerability', framework: 'ISO 27001:2022 A.8.8' },
-        { id: 'IT-008', name: 'Penetration Testing', category: 'Test', framework: 'ISO 27001:2022 A.8.8' },
-        { id: 'IT-009', name: 'Incident Response', category: 'Incident', framework: 'ISO 27001:2022 A.5.24' },
-        { id: 'IT-010', name: 'Backup and Recovery', category: 'Backup', framework: 'ISO 27001:2022 A.8.13' },
-        { id: 'IT-011', name: 'Identity Management (IAM)', category: 'IAM', framework: 'ISO 27001:2022 A.5.16' },
-        { id: 'IT-012', name: 'Privileged Access (PAM)', category: 'IAM', framework: 'ISO 27001:2022 A.5.18' },
-        { id: 'IT-013', name: 'Endpoint Security (EDR)', category: 'Endpoint', framework: 'ISO 27001:2022 A.8.8' },
-        { id: 'IT-014', name: 'Email Security', category: 'Email', framework: 'ISO 27001:2022 A.8.11' },
-        { id: 'IT-015', name: 'Web Security (WAF)', category: 'Web', framework: 'ISO 27001:2022 A.8.23' },
-        { id: 'IT-016', name: 'DNS Security (DNSSEC)', category: 'Network', framework: 'ISO 27001:2022 A.8.20' },
-        { id: 'IT-017', name: 'Load Balancer Security', category: 'Network', framework: 'ISO 27001:2022 A.8.20' },
-        { id: 'IT-018', name: 'Firewall Management', category: 'Network', framework: 'ISO 27001:2022 A.8.20' },
-        { id: 'IT-019', name: 'Switch Security (802.1X)', category: 'Network', framework: 'IEEE 802.1X' },
-        { id: 'IT-020', name: 'Router Security (BGP)', category: 'Network', framework: 'MANRS' },
-        { id: 'IT-021', name: 'Wireless Security (WPA3)', category: 'Wireless', framework: 'IEEE 802.11i' },
-        { id: 'IT-022', name: 'VPN Security', category: 'Remote', framework: 'ISO 27001:2022 A.6.7' },
-        { id: 'IT-023', name: 'Application Security (SDLC)', category: 'App', framework: 'ISO 27001:2022 A.8.25' },
-        { id: 'IT-024', name: 'DevSecOps', category: 'Dev', framework: 'ISO 27001:2022 A.8.26' },
-        { id: 'IT-025', name: 'API Security', category: 'API', framework: 'ISO 27001:2022 A.8.27' },
-        { id: 'IT-026', name: 'Container Security', category: 'Container', framework: 'NIST SP 800-190' },
-        { id: 'IT-027', name: 'Kubernetes Security', category: 'Container', framework: 'NSA K8s Hardening' },
-        { id: 'IT-028', name: 'Microservices Security', category: 'App', framework: 'NIST SP 800-204A' },
-        { id: 'IT-029', name: 'Serverless Security', category: 'Cloud', framework: 'OWASP Serverless Top 10' },
-        { id: 'IT-030', name: 'SaaS Security', category: 'Cloud', framework: 'CSA CCM v4' },
-        { id: 'IT-031', name: 'PaaS Security', category: 'Cloud', framework: 'NIST SP 800-210' },
-        { id: 'IT-032', name: 'IaaS Security', category: 'Cloud', framework: 'NIST SP 800-210' },
-        { id: 'IT-033', name: 'Hybrid Cloud Security', category: 'Cloud', framework: 'NIST SP 800-210' },
-        { id: 'IT-034', name: 'Multi-Cloud Security', category: 'Cloud', framework: 'CSA CCM v4' },
-        { id: 'IT-035', name: 'Zero Trust Architecture', category: 'Network', framework: 'NIST SP 800-207' }
+        // 4.1.1 Ümumi idarəetmə və risk
+        { id: 'IT-001', name: 'Təhlükəsizlik prosedurlarının hazırlanması', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | ISO 27001:2022 A.5.1' },
+        { id: 'IT-002', name: 'Reyestrdə prosedur yerləşdirilməsi', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | ISO 27001:2022 A.5.1' },
+        { id: 'IT-003', name: 'İT risk qiymətləndirməsi', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | ISO 27001:2022 Cl.6.1' },
+        { id: 'IT-004', name: 'Səlahiyyət bölgüsü (CISO/IT Məsul)', category: 'Management', framework: 'Kİİ Qaydaları 4.1.1(3) | ISO 27001:2022 A.5.2' },
+        { id: 'IT-005', name: 'Üçüncü tərəf müqavilə tələbləri (MSP/Cloud)', category: 'Supplier', framework: 'Kİİ Qaydaları 4.1.1(4) | ISO 27001:2022 A.5.19' },
+        { id: 'IT-006', name: 'İnformasiya Təhlükəsizliyi Siyasəti', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1 | ISO 27001:2022 A.5.1' },
+        { id: 'IT-007', name: 'Kibertəhlükəsizlik Risk Qiymətləndirməsi', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | NIST CSF' },
+        // 4.1.2 İnsan resursları
+        { id: 'IT-008', name: 'İT personalının mütəmadi təlimi', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | ISO 27001:2022 A.6.3' },
+        { id: 'IT-009', name: 'İşə qəbulda təhlükəsizlik öhdəliyi imzalanması', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | ISO 27001:2022 A.6.1' },
+        { id: 'IT-010', name: 'İşdən çıxmada hesab deaktivasiyası', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | ISO 27001:2022 A.6.5' },
+        { id: 'IT-011', name: 'Personal təhlükəsizlik yoxlaması', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | ISO 27001:2022 A.5.15' },
+        { id: 'IT-012', name: 'Məlumatların açıqlanmaması öhdəliyi (NDA)', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | ISO 27001:2022 A.6.2' },
+        { id: 'IT-013', name: 'Maarifləndirici tədbirlər (Phishing Simulation)', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | ISO 27001:2022 A.6.3' },
+        // 4.1.3 Fiziki və informasiya təhlükəsizliyi
+        { id: 'IT-014', name: 'Data Mərkəzinə icazəsiz girişin qarşısı', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(1) | ISO 27001:2022 A.7.1' },
+        { id: 'IT-015', name: 'Server/aparat aktivlərinin qorunması', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(2) | ISO 27001:2022 A.7.9' },
+        { id: 'IT-016', name: 'Sertifikatlı proqram/aparat vasitələri', category: 'Software', framework: 'Kİİ Qaydaları 4.1.3(3) | ISO 27001:2022 A.8.8' },
+        { id: 'IT-017', name: 'Davamlı enerji (Data Mərkəz UPS/Generator)', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(4) | ISO 27001:2022 A.7.11' },
+        { id: 'IT-018', name: 'Giriş nəzarəti (loq-fayllar, RBAC/PAM)', category: 'Access', framework: 'Kİİ Qaydaları 4.1.3(5) | ISO 27001:2022 A.5.15' },
+        { id: 'IT-019', name: 'Məlumat şifrələməsi (At-rest/In-transit)', category: 'Crypto', framework: 'Kİİ Qaydaları 4.1.3(6) | ISO 27001:2022 A.8.24' },
+        { id: 'IT-020', name: 'Şəbəkə Seqmentasiyası (Zero Trust/VLAN)', category: 'Network', framework: 'Kİİ Qaydaları 4.1.3 | NIST SP 800-207' },
+        { id: 'IT-021', name: 'Endpoint Müdafiəsi (EDR/Antivirus)', category: 'Endpoint', framework: 'Kİİ Qaydaları 4.1.3 | ISO 27001:2022 A.8.8' },
+        // 4.1.4 Əməliyyatların idarəedilməsi
+        { id: 'IT-022', name: 'İT əməliyyat prosedurlarının sənədləşdirilməsi', category: 'Ops', framework: 'Kİİ Qaydaları 4.1.4(1) | ISO 27001:2022 A.5.37' },
+        { id: 'IT-023', name: 'Dəyişikliklərin idarəedilməsi (ITIL Change)', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(2) | ISO 27001:2022 A.8.32' },
+        { id: 'IT-024', name: 'İT aktivlərinin inventar qeydiyyatı (CMDB)', category: 'Assets', framework: 'Kİİ Qaydaları 4.1.4(3) | ISO 27001:2022 A.5.9' },
+        { id: 'IT-025', name: 'İT sistem layihə ekspertizası (SA&T)', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(4) | ISO 27001:2022 A.8.29' },
+        { id: 'IT-026', name: 'Zəiflik İdarəetməsi (Patch/Scan)', category: 'Vulnerability', framework: 'Kİİ Qaydaları 4.1.4 | ISO 27001:2022 A.8.8' },
+        { id: 'IT-027', name: 'Bulud Təhlükəsizliyi (Cloud Security)', category: 'Cloud', framework: 'Kİİ Qaydaları 4.1.4 | ISO 27001:2022 A.5.23' },
+        { id: 'IT-028', name: 'DevSecOps / Təhlükəsiz Kod Tətbiqatı (SDLC)', category: 'Dev', framework: 'Kİİ Qaydaları 4.1.4 | ISO 27001:2022 A.8.25' },
+        // 4.1.5 Kiberinsidentlərin idarəedilməsi
+        { id: 'IT-029', name: 'Kiberinsident idarəetmə prosedurları', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(1) | ISO 27001:2022 A.5.24' },
+        { id: 'IT-030', name: 'Kiberinsidentlərin aşkarlanması (SIEM/SOC)', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.5(2) | ISO 27001:2022 A.8.16' },
+        { id: 'IT-031', name: 'Real vaxt kommunikasiya (CERT bildirim)', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(3) | ISO 27001:2022 A.5.26' },
+        { id: 'IT-032', name: 'İnsident sonrası hesabatlılıq (Post-Incident)', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(4) | ISO 27001:2022 A.5.27' },
+        { id: 'IT-033', name: 'Milli kibermərkəzə bildirim', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5 | Kİİ Qanunu 20-4' },
+        { id: 'IT-034', name: 'Ransomware / APT Müdafiəsi', category: 'Cyber', framework: 'Kİİ Qaydaları 4.1.5 | ISO 27001:2022 A.5.7' },
+        { id: 'IT-035', name: 'Email Təhlükəsizliyi (Anti-phishing/DMARC)', category: 'Cyber', framework: 'Kİİ Qaydaları 4.1.5 | ISO 27001:2022 A.8.23' },
+        // 4.1.6 Fəaliyyətin fasiləsizliyi
+        { id: 'IT-036', name: 'Fövqəladə hal strategiyası (IT BCP)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(1) | ISO 27001:2022 A.5.29' },
+        { id: 'IT-037', name: 'İT fəaliyyətin davamlılıq planı (DRP)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | ISO 27001:2022 A.5.29' },
+        { id: 'IT-038', name: 'Bərpa planının illik sınağı (DR Test)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | ISO 27001:2022 A.5.30' },
+        { id: 'IT-039', name: 'Dayanma müddəti həddi (RTO/RPO)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(3) | ISO 27001:2022 A.5.30' },
+        { id: 'IT-040', name: 'Məlumat Ehtiyatı (Backup 3-2-1)', category: 'Backup', framework: 'Kİİ Qaydaları 4.1.6 | ISO 27001:2022 A.8.13' },
+        { id: 'IT-041', name: 'Alternativ Data Mərkəzi (Hot/Warm Standby)', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.6 | ISO 27001:2022 A.5.29' },
+        { id: 'IT-042', name: 'Uzaqdan Giriş Təhlükəsizliyi (VPN/ZTNA)', category: 'Remote', framework: 'Kİİ Qaydaları 4.1.6 | ISO 27001:2022 A.6.7' },
+        // 4.1.7 Monitorinq, audit, müdaxilə sınaqları
+        { id: 'IT-043', name: 'Reyestrə məlumat daxil edilməsi', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(1) | ISO 27001:2022 Cl.9.1' },
+        { id: 'IT-044', name: 'Fasiləsiz 24/7 monitorinq (SIEM/loq)', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(2) | ISO 27001:2022 A.8.15' },
+        { id: 'IT-045', name: 'Daxili audit planı (illik)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(3) | ISO 27001:2022 Cl.9.2' },
+        { id: 'IT-046', name: 'Penetrasiya sınaqları (ildə 1+ dəfə)', category: 'Test', framework: 'Kİİ Qaydaları 4.1.7(4) | ISO 27001:2022 A.8.8' },
+        { id: 'IT-047', name: 'Kibermərkəzə real vaxt məlumat ötürmə', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(5) | Kİİ Qanunu 20-4' },
+        { id: 'IT-048', name: 'Konfiqurasiya qeydiyyatı (CMDB/tamlıq)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(6) | ISO 27001:2022 A.8.9' },
+        { id: 'IT-049', name: 'Hüquqi uyğunluq (GDPR/Yerli qanun)', category: 'Compliance', framework: 'Kİİ Qaydaları 4.1.7 | ISO 27001:2022 A.5.31' }
     ],
     telecom: [
-        { id: 'TEL-001', name: 'Mobile Network Security', category: 'Mobile', framework: '3GPP TS 33.501' },
-        { id: 'TEL-002', name: 'Fiber Optic Lines', category: 'Physical', framework: 'ISO 27001:2022 A.7.1' },
-        { id: 'TEL-003', name: 'Telecom Stations', category: 'Equipment', framework: 'TIA-942' },
-        { id: 'TEL-004', name: 'VoIP Systems (SRTP)', category: 'Voice', framework: 'ISO 27001:2022 A.8.11' },
-        { id: 'TEL-005', name: 'Internet Infrastructure', category: 'Internet', framework: 'MANRS' },
-        { id: 'TEL-006', name: '5G Network Security', category: 'Mobile', framework: '3GPP TS 33.501' },
-        { id: 'TEL-007', name: 'Routing Security (RPKI)', category: 'Network', framework: 'IETF RFC 8205' },
-        { id: 'TEL-008', name: 'Telecom Data Center', category: 'Physical', framework: 'TIA-942' },
-        { id: 'TEL-009', name: 'Subscriber Data (GDPR)', category: 'Data', framework: 'GDPR Article 32' },
-        { id: 'TEL-010', name: 'Network Management', category: 'Management', framework: 'TM Forum' },
-        { id: 'TEL-011', name: 'SS7 Signaling Security', category: 'Signaling', framework: 'GSMA FS.11' },
-        { id: 'TEL-012', name: 'Diameter Signaling', category: 'Signaling', framework: 'GSMA FS.13' },
-        { id: 'TEL-013', name: 'Roaming Security', category: 'Mobile', framework: 'GSMA FS.11' },
-        { id: 'TEL-014', name: 'Interconnect Security', category: 'Network', framework: 'GSMA IR.34' },
-        { id: 'TEL-015', name: 'SIM Card Security', category: 'Mobile', framework: 'GSMA SAS-UP' },
-        { id: 'TEL-016', name: 'eSIM Security', category: 'Mobile', framework: 'GSMA RSP' },
-        { id: 'TEL-017', name: 'IMS Security', category: 'Core', framework: '3GPP TS 33.203' },
-        { id: 'TEL-018', name: 'EPC Security', category: 'Core', framework: '3GPP TS 33.401' },
-        { id: 'TEL-019', name: 'RAN Security', category: 'Radio', framework: '3GPP TS 33.401' },
-        { id: 'TEL-020', name: 'Small Cell Security', category: 'Radio', framework: '3GPP TS 33.401' },
-        { id: 'TEL-021', name: 'Macro Cell Security', category: 'Radio', framework: '3GPP TS 33.401' },
-        { id: 'TEL-022', name: 'Backhaul Security', category: 'Transport', framework: 'IEEE 802.11' },
-        { id: 'TEL-023', name: 'Fronthaul Security (CPRI)', category: 'Transport', framework: 'CPRI Spec V7.0' },
-        { id: 'TEL-024', name: 'Network Slicing', category: '5G', framework: '3GPP TS 33.813' },
-        { id: 'TEL-025', name: 'MEC Security', category: 'Edge', framework: 'ETSI GS MEC 002' },
-        { id: 'TEL-026', name: 'NFV Security', category: 'Virtual', framework: 'ETSI GS NFV-SEC 003' },
-        { id: 'TEL-027', name: 'SDN Security', category: 'Virtual', framework: 'ONF TR-521' },
-        { id: 'TEL-028', name: 'OSS/BSS Security', category: 'Management', framework: 'TM Forum' },
-        { id: 'TEL-029', name: 'IoT Connectivity', category: 'IoT', framework: 'GSMA IoT Guide' },
-        { id: 'TEL-030', name: 'NB-IoT Security', category: 'IoT', framework: '3GPP TS 33.401' },
-        { id: 'TEL-031', name: 'LTE-M Security', category: 'IoT', framework: '3GPP TS 33.401' },
-        { id: 'TEL-032', name: 'Satellite Comms', category: 'Space', framework: 'ITU-R S.1711' },
-        { id: 'TEL-033', name: 'Submarine Cables', category: 'Physical', framework: 'ITU-T L.10' },
-        { id: 'TEL-034', name: 'Microwave Links', category: 'Transport', framework: 'ITU-R F.752' },
-        { id: 'TEL-035', name: 'Network Timing (PTP)', category: 'Sync', framework: 'IEEE 1588' }
+        // 4.1.1 Ümumi idarəetmə və risk
+        { id: 'TEL-001', name: 'Təhlükəsizlik prosedurlarının hazırlanması', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | ENISA Telecom Guidelines' },
+        { id: 'TEL-002', name: 'Reyestrdə prosedur yerləşdirilməsi', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | ENISA Telecom Guidelines' },
+        { id: 'TEL-003', name: 'Telekommunikasiya risk qiymətləndirməsi', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | ENISA NIS2 Telecom' },
+        { id: 'TEL-004', name: 'Səlahiyyət bölgüsü (Telecom Məsul Şəxs)', category: 'Management', framework: 'Kİİ Qaydaları 4.1.1(3) | 3GPP TS 33.501' },
+        { id: 'TEL-005', name: 'Üçüncü tərəf müqavilə tələbləri (Vendor)', category: 'Supplier', framework: 'Kİİ Qaydaları 4.1.1(4) | GSMA FS.11' },
+        { id: 'TEL-006', name: 'İnformasiya Təhlükəsizliyi Siyasəti', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1 | ISO 27001:2022 A.5.1' },
+        { id: 'TEL-007', name: 'Telecom İnfrastruktur Risk Qiymətləndirməsi', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | ENISA NIS2' },
+        // 4.1.2 İnsan resursları
+        { id: 'TEL-008', name: 'Telecom personalının mütəmadi təlimi', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | GSMA FS Guidelines' },
+        { id: 'TEL-009', name: 'İşə qəbulda təhlükəsizlik öhdəliyi', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | ISO 27001:2022 A.6.1' },
+        { id: 'TEL-010', name: 'İşdən çıxmada hesab deaktivasiyası', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | ISO 27001:2022 A.6.5' },
+        { id: 'TEL-011', name: 'Personal yoxlama (Telecom Background)', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | GSMA FS Guidelines' },
+        { id: 'TEL-012', name: 'Məlumatların açıqlanmaması öhdəliyi', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | GDPR Art.32' },
+        { id: 'TEL-013', name: 'Maarifləndirici tədbirlər (Telecom Security)', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | ENISA NIS2' },
+        // 4.1.3 Fiziki və informasiya təhlükəsizliyi
+        { id: 'TEL-014', name: 'Telecom stansiyalarına girişin nəzarəti', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(1) | TIA-942' },
+        { id: 'TEL-015', name: 'Fiber optik/antenna aktivlərinin qorunması', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(2) | ITU-T L.10' },
+        { id: 'TEL-016', name: 'Sertifikatlı telecom proqram/aparat vasitələri', category: 'Software', framework: 'Kİİ Qaydaları 4.1.3(3) | 3GPP TS 33.501' },
+        { id: 'TEL-017', name: 'Davamlı enerji (BTS/Core UPS/Generator)', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(4) | TIA-942' },
+        { id: 'TEL-018', name: 'Şəbəkə giriş nəzarəti (loq-fayllar)', category: 'Access', framework: 'Kİİ Qaydaları 4.1.3(5) | ENISA Telecom' },
+        { id: 'TEL-019', name: 'Abunəçi məlumatının şifrələnməsi (GDPR)', category: 'Crypto', framework: 'Kİİ Qaydaları 4.1.3(6) | GDPR Art.32' },
+        { id: 'TEL-020', name: '5G Şəbəkə Seqmentasiyası (Network Slicing)', category: 'Mobile', framework: 'Kİİ Qaydaları 4.1.3 | 3GPP TS 33.813' },
+        { id: 'TEL-021', name: 'SS7/Diameter Siqnalizasiya Müdafiəsi', category: 'Signaling', framework: 'Kİİ Qaydaları 4.1.3 | GSMA FS.11' },
+        // 4.1.4 Əməliyyatların idarəedilməsi
+        { id: 'TEL-022', name: 'Telecom əməliyyat prosedurlarının sənədləşdirilməsi', category: 'Ops', framework: 'Kİİ Qaydaları 4.1.4(1) | TM Forum' },
+        { id: 'TEL-023', name: 'Şəbəkə dəyişiklik idarəetməsi (Change Mgmt)', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(2) | TM Forum' },
+        { id: 'TEL-024', name: 'Telecom aktivlər inventarı (OSS/BSS)', category: 'Assets', framework: 'Kİİ Qaydaları 4.1.4(3) | TM Forum' },
+        { id: 'TEL-025', name: 'Telecom sistem layihə ekspertizası', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(4) | 3GPP SA3' },
+        { id: 'TEL-026', name: 'Zəiflik İdarəetməsi (Telecom Patching)', category: 'Vulnerability', framework: 'Kİİ Qaydaları 4.1.4 | GSMA FS.11' },
+        { id: 'TEL-027', name: 'NFV/SDN Virtual Şəbəkə Təhlükəsizliyi', category: 'Virtual', framework: 'Kİİ Qaydaları 4.1.4 | ETSI GS NFV-SEC 003' },
+        { id: 'TEL-028', name: 'IoT / NB-IoT Bağlantı Təhlükəsizliyi', category: 'IoT', framework: 'Kİİ Qaydaları 4.1.4 | GSMA IoT Guide' },
+        // 4.1.5 Kiberinsidentlərin idarəedilməsi
+        { id: 'TEL-029', name: 'Kiberinsident idarəetmə prosedurları', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(1) | ENISA Telecom' },
+        { id: 'TEL-030', name: 'Telecom kiberinsidentlərinin aşkarlanması', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.5(2) | ENISA NIS2' },
+        { id: 'TEL-031', name: 'Real vaxt kommunikasiya (CERT bildirim)', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(3) | ENISA CERT-EU' },
+        { id: 'TEL-032', name: 'İnsident sonrası hesabatlılıq', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(4) | ENISA NIS2 Art.23' },
+        { id: 'TEL-033', name: 'Milli kibermərkəzə bildirim', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5 | Kİİ Qanunu 20-4' },
+        { id: 'TEL-034', name: 'DDoS / Telecom Şəbəkə Hücum Müdafiəsi', category: 'Cyber', framework: 'Kİİ Qaydaları 4.1.5 | ENISA Telecom' },
+        { id: 'TEL-035', name: 'SIM Swapping / Fraud Aşkarlama', category: 'Cyber', framework: 'Kİİ Qaydaları 4.1.5 | GSMA FS.11' },
+        // 4.1.6 Fəaliyyətin fasiləsizliyi
+        { id: 'TEL-036', name: 'Fövqəladə hal strategiyası (Telecom BCP)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(1) | ENISA Telecom' },
+        { id: 'TEL-037', name: 'Telecom fəaliyyətin davamlılıq planı', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | ENISA Telecom' },
+        { id: 'TEL-038', name: 'Bərpa planının illik sınağı', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | ISO 27001:2022 A.5.30' },
+        { id: 'TEL-039', name: 'Dayanma müddəti həddi (RTO/RPO)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(3) | ENISA Telecom' },
+        { id: 'TEL-040', name: 'Şəbəkə Data Ehtiyatı / Config Backup', category: 'Backup', framework: 'Kİİ Qaydaları 4.1.6 | ISO 27001:2022 A.8.13' },
+        { id: 'TEL-041', name: 'Alternativ Şəbəkə Marşrutu (Redundancy)', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.6 | ENISA Telecom' },
+        { id: 'TEL-042', name: 'Peyk Rabitəsi Ehtiyat Sistemi (Backup Comms)', category: 'Comms', framework: 'Kİİ Qaydaları 4.1.6 | ITU-R S.1711' },
+        // 4.1.7 Monitorinq, audit, müdaxilə sınaqları
+        { id: 'TEL-043', name: 'Reyestrə məlumat daxil edilməsi', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(1) | ENISA NIS2' },
+        { id: 'TEL-044', name: 'Fasiləsiz 24/7 monitorinq (NOC/SOC loq)', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(2) | ENISA Telecom' },
+        { id: 'TEL-045', name: 'Daxili audit planı (illik)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(3) | ENISA NIS2' },
+        { id: 'TEL-046', name: 'Penetrasiya sınaqları (ildə 1+ dəfə)', category: 'Test', framework: 'Kİİ Qaydaları 4.1.7(4) | GSMA FS.11' },
+        { id: 'TEL-047', name: 'Kibermərkəzə real vaxt məlumat ötürmə', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(5) | Kİİ Qanunu 20-4' },
+        { id: 'TEL-048', name: 'Konfiqurasiya qeydiyyatı (OSS/BSS CMDB)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(6) | TM Forum' },
+        { id: 'TEL-049', name: 'Tənzimləyici Uyğunluq (NIS2/ENISA/ITU)', category: 'Compliance', framework: 'Kİİ Qaydaları 4.1.7 | ENISA NIS2' }
     ],
     water: [
-        { id: 'WTR-001', name: 'Reservoir Security', category: 'Physical', framework: 'AWWA G430' },
-        { id: 'WTR-002', name: 'Water Treatment Plants', category: 'Process', framework: 'AWWA G430' },
-        { id: 'WTR-003', name: 'Pumping Stations', category: 'SCADA', framework: 'NIST SP 800-82' },
-        { id: 'WTR-004', name: 'Pipeline Systems', category: 'Infrastructure', framework: 'API 1165' },
-        { id: 'WTR-005', name: 'Water Quality Monitoring', category: 'Monitoring', framework: 'EPA CWA' },
-        { id: 'WTR-006', name: 'Chemical Treatment', category: 'Process', framework: 'OSHA 29 CFR 1910' },
-        { id: 'WTR-007', name: 'Water Resource Management', category: 'Management', framework: 'AWWA' },
-        { id: 'WTR-008', name: 'Emergency Plan', category: 'BCM', framework: 'EPA Response Protocol' },
-        { id: 'WTR-009', name: 'Personnel Security', category: 'HR', framework: 'ISO 27001:2022 A.5.15' },
-        { id: 'WTR-010', name: 'Supply Chain Security', category: 'Supply Chain', framework: 'ISO 27001:2022 A.5.19' },
-        { id: 'WTR-011', name: 'Water Meters (AMI)', category: 'IoT', framework: 'AWWA Metering' },
-        { id: 'WTR-012', name: 'Sewage System', category: 'Infrastructure', framework: 'EPA CWA' },
-        { id: 'WTR-013', name: 'Treatment Chemicals', category: 'Safety', framework: 'OSHA 29 CFR 1910' },
-        { id: 'WTR-014', name: 'Reservoir Monitoring', category: 'Monitoring', framework: 'USBR Dam Safety' },
-        { id: 'WTR-015', name: 'Water Distribution', category: 'Infrastructure', framework: 'AWWA' },
-        { id: 'WTR-016', name: 'Emergency Repair', category: 'Ops', framework: 'AWWA' },
-        { id: 'WTR-017', name: 'Water Quality Lab', category: 'Lab', framework: 'ISO 17025' },
-        { id: 'WTR-018', name: 'Watershed Protection', category: 'Environment', framework: 'EPA SWP' },
-        { id: 'WTR-019', name: 'Groundwater Monitoring', category: 'Monitoring', framework: 'USGS' },
-        { id: 'WTR-020', name: 'Supply Planning', category: 'Planning', framework: 'AWWA' },
-        { id: 'WTR-021', name: 'Desalination Plant', category: 'Process', framework: 'AWWA Desal' },
-        { id: 'WTR-022', name: 'Wastewater Treatment', category: 'Process', framework: 'EPA NPDES' },
-        { id: 'WTR-023', name: 'Stormwater Management', category: 'Infrastructure', framework: 'EPA NPDES' },
-        { id: 'WTR-024', name: 'Irrigation Systems', category: 'IoT', framework: 'USDA NRCS' },
-        { id: 'WTR-025', name: 'Dam Operations', category: 'SCADA', framework: 'FERC Dam Safety' },
-        { id: 'WTR-026', name: 'Canal Systems', category: 'Infrastructure', framework: 'USBR' },
-        { id: 'WTR-027', name: 'Water Reuse', category: 'Process', framework: 'EPA Reuse' },
-        { id: 'WTR-028', name: 'Aquifer Storage', category: 'Storage', framework: 'EPA ASR' },
-        { id: 'WTR-029', name: 'Hydroelectric Security', category: 'Energy', framework: 'FERC' },
-        { id: 'WTR-030', name: 'Billing Systems', category: 'Finance', framework: 'PCI DSS' },
-        { id: 'WTR-031', name: 'Water Quality Sensors', category: 'IoT', framework: 'EPA Sensor' },
-        { id: 'WTR-032', name: 'Pressure Reducing Valves', category: 'Infrastructure', framework: 'AWWA' },
-        { id: 'WTR-033', name: 'Fire Hydrants', category: 'Physical', framework: 'NFPA 291' },
-        { id: 'WTR-034', name: 'Water Tanks', category: 'Physical', framework: 'AWWA' },
-        { id: 'WTR-035', name: 'SCADA Networks', category: 'SCADA', framework: 'NIST SP 800-82' }
+        // 4.1.1 Ümumi idarəetmə və risk
+        { id: 'WTR-001', name: 'Təhlükəsizlik prosedurlarının hazırlanması', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | AWWA G430' },
+        { id: 'WTR-002', name: 'Reyestrdə prosedur yerləşdirilməsi', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | AWWA G430' },
+        { id: 'WTR-003', name: 'Su sistemi riskinin qiymətləndirilməsi', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | EPA VSAT' },
+        { id: 'WTR-004', name: 'Səlahiyyət bölgüsü (Su Sistemi Məsul Şəxs)', category: 'Management', framework: 'Kİİ Qaydaları 4.1.1(3) | AWWA G430' },
+        { id: 'WTR-005', name: 'Üçüncü tərəf müqavilə tələbləri (Vendor)', category: 'Supplier', framework: 'Kİİ Qaydaları 4.1.1(4) | AWWA G430' },
+        { id: 'WTR-006', name: 'İnformasiya Təhlükəsizliyi Siyasəti', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1 | ISO 27001:2022 A.5.1' },
+        { id: 'WTR-007', name: 'Su İnfrastruktur Risk Qiymətləndirməsi', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | EPA AWIA 2018' },
+        // 4.1.2 İnsan resursları
+        { id: 'WTR-008', name: 'Su sistemi personalının mütəmadi təlimi', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | AWWA G430' },
+        { id: 'WTR-009', name: 'İşə qəbulda təhlükəsizlik öhdəliyi', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | AWWA G430' },
+        { id: 'WTR-010', name: 'İşdən çıxmada hesab deaktivasiyası', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | ISO 27001:2022 A.6.5' },
+        { id: 'WTR-011', name: 'Personal yoxlama (Background Check)', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | AWWA G430' },
+        { id: 'WTR-012', name: 'Məlumatların açıqlanmaması öhdəliyi', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | ISO 27001:2022 A.6.2' },
+        { id: 'WTR-013', name: 'Maarifləndirici tədbirlər (Water Security)', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | AWWA G430' },
+        // 4.1.3 Fiziki və informasiya təhlükəsizliyi
+        { id: 'WTR-014', name: 'Rezervuara / nasosxanaya girişin nəzarəti', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(1) | AWWA G430' },
+        { id: 'WTR-015', name: 'Su sistemi aktivlərinin qorunması', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(2) | AWWA G430' },
+        { id: 'WTR-016', name: 'Sertifikatlı SCADA/ICS proqram vasitələri', category: 'Software', framework: 'Kİİ Qaydaları 4.1.3(3) | NIST SP 800-82' },
+        { id: 'WTR-017', name: 'Davamlı enerji (UPS nasosxana/müalicə)', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(4) | AWWA G430' },
+        { id: 'WTR-018', name: 'Su SCADA giriş nəzarəti (loq-fayllar)', category: 'Access', framework: 'Kİİ Qaydaları 4.1.3(5) | NIST SP 800-82' },
+        { id: 'WTR-019', name: 'Su keyfiyyəti məlumatının qorunması', category: 'Crypto', framework: 'Kİİ Qaydaları 4.1.3(6) | EPA CWA' },
+        { id: 'WTR-020', name: 'Su SCADA Şəbəkə Seqmentasiyası (OT/IT)', category: 'Network', framework: 'Kİİ Qaydaları 4.1.3 | NIST SP 800-82' },
+        { id: 'WTR-021', name: 'Kimyəvi işlənmə sistemi təhlükəsizliyi', category: 'Safety', framework: 'Kİİ Qaydaları 4.1.3 | OSHA 29 CFR 1910' },
+        // 4.1.4 Əməliyyatların idarəedilməsi
+        { id: 'WTR-022', name: 'Su sistemi əməliyyat prosedurlarının sənədləşdirilməsi', category: 'Ops', framework: 'Kİİ Qaydaları 4.1.4(1) | AWWA G430' },
+        { id: 'WTR-023', name: 'Su SCADA dəyişiklik idarəetməsi', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(2) | NIST SP 800-82' },
+        { id: 'WTR-024', name: 'Su sistemi aktivlər inventarı', category: 'Assets', framework: 'Kİİ Qaydaları 4.1.4(3) | AWWA G430' },
+        { id: 'WTR-025', name: 'Su sistemi layihə ekspertizası', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(4) | AWWA G430' },
+        { id: 'WTR-026', name: 'Su SCADA Zəiflik İdarəetməsi (Patching)', category: 'Vulnerability', framework: 'Kİİ Qaydaları 4.1.4 | NIST SP 800-82' },
+        { id: 'WTR-027', name: 'AMI / Ağıllı Sayğac Təhlükəsizliyi', category: 'IoT', framework: 'Kİİ Qaydaları 4.1.4 | AWWA Metering' },
+        { id: 'WTR-028', name: 'Su Keyfiyyəti Sensor Monitorinqi', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.4 | EPA Sensor' },
+        // 4.1.5 Kiberinsidentlərin idarəedilməsi
+        { id: 'WTR-029', name: 'Kiberinsident idarəetmə prosedurları', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(1) | EPA Response Protocol' },
+        { id: 'WTR-030', name: 'Su sistemi kiberinsidentlərinin aşkarlanması', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.5(2) | AWWA G430' },
+        { id: 'WTR-031', name: 'Real vaxt kommunikasiya (WaterISAC bildirim)', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(3) | WaterISAC' },
+        { id: 'WTR-032', name: 'İnsident sonrası hesabatlılıq', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(4) | EPA Response' },
+        { id: 'WTR-033', name: 'Milli kibermərkəzə bildirim', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5 | Kİİ Qanunu 20-4' },
+        { id: 'WTR-034', name: 'Su SCADA Kiberhücum Müdafiəsi', category: 'Cyber', framework: 'Kİİ Qaydaları 4.1.5 | NIST SP 800-82' },
+        { id: 'WTR-035', name: 'Su Kimyəvi Dəyişiklik Aşkarlama', category: 'Safety', framework: 'Kİİ Qaydaları 4.1.5 | EPA CWA' },
+        // 4.1.6 Fəaliyyətin fasiləsizliyi
+        { id: 'WTR-036', name: 'Fövqəladə hal strategiyası (Water BCP)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(1) | EPA Response Protocol' },
+        { id: 'WTR-037', name: 'Su fəaliyyətin davamlılıq planı (DRP)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | AWWA G430' },
+        { id: 'WTR-038', name: 'Bərpa planının illik sınağı', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | AWWA G430' },
+        { id: 'WTR-039', name: 'Dayanma müddəti həddi (RTO/RPO)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(3) | EPA AWIA' },
+        { id: 'WTR-040', name: 'SCADA Data Ehtiyatı (Airgap Backup)', category: 'Backup', framework: 'Kİİ Qaydaları 4.1.6 | NIST SP 800-82' },
+        { id: 'WTR-041', name: 'Alternativ Enerji (Generator Nasosxana)', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.6 | AWWA G430' },
+        { id: 'WTR-042', name: 'Alternativ Su Mənbəyi Fövqəladə Plan', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6 | EPA Response Protocol' },
+        // 4.1.7 Monitorinq, audit, müdaxilə sınaqları
+        { id: 'WTR-043', name: 'Reyestrə məlumat daxil edilməsi', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(1) | AWWA G430' },
+        { id: 'WTR-044', name: 'Fasiləsiz 24/7 monitorinq (SCADA/loq)', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(2) | NIST SP 800-82' },
+        { id: 'WTR-045', name: 'Daxili audit planı (illik)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(3) | EPA AWIA' },
+        { id: 'WTR-046', name: 'Penetrasiya sınaqları (OT/IT ildə 1+)', category: 'Test', framework: 'Kİİ Qaydaları 4.1.7(4) | NIST SP 800-82' },
+        { id: 'WTR-047', name: 'Kibermərkəzə real vaxt məlumat ötürmə', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(5) | Kİİ Qanunu 20-4' },
+        { id: 'WTR-048', name: 'Konfiqurasiya qeydiyyatı (CMDB)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(6) | NIST SP 800-82' },
+        { id: 'WTR-049', name: 'Tənzimləyici Uyğunluq (EPA/AWWA/Yerli)', category: 'Compliance', framework: 'Kİİ Qaydaları 4.1.7 | EPA AWIA 2018' }
     ],
     ecology: [
-        { id: 'ECO-001', name: 'Air Quality Monitoring', category: 'Monitoring', framework: 'EPA 40 CFR 50' },
-        { id: 'ECO-002', name: 'Radioactive Waste', category: 'Hazardous', framework: 'NRC 10 CFR 20' },
-        { id: 'ECO-003', name: 'Chemical Storage', category: 'Safety', framework: 'OSHA 29 CFR 1910' },
-        { id: 'ECO-004', name: 'Forest Fire Detection', category: 'Emergency', framework: 'USFS' },
-        { id: 'ECO-005', name: 'Water Pollution', category: 'Monitoring', framework: 'EPA CWA' },
-        { id: 'ECO-006', name: 'Soil Contamination', category: 'Monitoring', framework: 'EPA CERCLA' },
-        { id: 'ECO-007', name: 'Biodiversity Protection', category: 'Nature', framework: 'CITES' },
-        { id: 'ECO-008', name: 'Climate Change', category: 'Climate', framework: 'ISO 14064' },
-        { id: 'ECO-009', name: 'Waste Management', category: 'Waste', framework: 'EPA RCRA' },
-        { id: 'ECO-010', name: 'Environmental Impact', category: 'Impact', framework: 'NEPA' },
-        { id: 'ECO-011', name: 'Marine Ecosystems', category: 'Marine', framework: 'MARPOL' },
-        { id: 'ECO-012', name: 'Hazardous Transport', category: 'Transport', framework: '49 CFR 171' },
-        { id: 'ECO-013', name: 'Noise Pollution', category: 'Monitoring', framework: 'EPA Noise' },
-        { id: 'ECO-014', name: 'Wetlands Protection', category: 'Nature', framework: 'Ramsar' },
-        { id: 'ECO-015', name: 'Protected Areas', category: 'Physical', framework: 'IUCN' },
-        { id: 'ECO-016', name: 'Pesticide Monitoring', category: 'Agriculture', framework: 'FIFRA' },
-        { id: 'ECO-017', name: 'Coral Reef Protection', category: 'Marine', framework: 'NOAA' },
-        { id: 'ECO-018', name: 'Environmental Data', category: 'Data', framework: 'ISO 17025' },
-        { id: 'ECO-019', name: 'Light Pollution', category: 'Monitoring', framework: 'IDA' },
-        { id: 'ECO-020', name: 'Groundwater Protection', category: 'Water', framework: 'SDWA' }
+        // 4.1.1 Ümumi idarəetmə və risk
+        { id: 'ECO-001', name: 'Ətraf mühit təhlükəsizlik prosedurları', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | ISO 14001:2015' },
+        { id: 'ECO-002', name: 'Reyestrdə prosedur yerləşdirilməsi', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | ISO 14001:2015' },
+        { id: 'ECO-003', name: 'Ətraf mühit sistemi risk qiymətləndirməsi', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | ISO 31000:2018' },
+        { id: 'ECO-004', name: 'Səlahiyyət bölgüsü (Ekoloji Məsul Şəxs)', category: 'Management', framework: 'Kİİ Qaydaları 4.1.1(3) | ISO 14001:2015' },
+        { id: 'ECO-005', name: 'Üçüncü tərəf müqavilə tələbləri', category: 'Supplier', framework: 'Kİİ Qaydaları 4.1.1(4) | ISO 14001:2015' },
+        { id: 'ECO-006', name: 'Ekoloji Məlumat Sistemi Təhlükəsizlik Siyasəti', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1 | ISO 27001:2022 A.5.1' },
+        { id: 'ECO-007', name: 'Ekoloji Sensor Şəbəkəsi Risk Qiymətləndirməsi', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | EPA NEPA' },
+        // 4.1.2 İnsan resursları
+        { id: 'ECO-008', name: 'Ekoloji personal mütəmadi təlimi', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | ISO 14001:2015' },
+        { id: 'ECO-009', name: 'İşə qəbulda ekoloji öhdəlik imzalanması', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | ISO 27001:2022 A.6.1' },
+        { id: 'ECO-010', name: 'İşdən çıxmada hesab deaktivasiyası', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | ISO 27001:2022 A.6.5' },
+        { id: 'ECO-011', name: 'Personal yoxlama (Ekoloji Müvafiqlik)', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | EPA Guidelines' },
+        { id: 'ECO-012', name: 'Məlumatların açıqlanmaması öhdəliyi', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | ISO 27001:2022 A.6.2' },
+        { id: 'ECO-013', name: 'Maarifləndirici tədbirlər (Eco Security)', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | ISO 14001:2015' },
+        // 4.1.3 Fiziki və informasiya təhlükəsizliyi
+        { id: 'ECO-014', name: 'Ekoloji monitoring stansiyalarına girişin nəzarəti', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(1) | EPA 40 CFR 50' },
+        { id: 'ECO-015', name: 'Sensor/monitoring avadanlıqlarının qorunması', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(2) | ISO 17025' },
+        { id: 'ECO-016', name: 'Sertifikatlı ekoloji monitoring proqramları', category: 'Software', framework: 'Kİİ Qaydaları 4.1.3(3) | ISO 17025' },
+        { id: 'ECO-017', name: 'Davamlı enerji (Sensor UPS/Solar)', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(4) | ISO 14001:2015' },
+        { id: 'ECO-018', name: 'Ekoloji sistem giriş nəzarəti (loq)', category: 'Access', framework: 'Kİİ Qaydaları 4.1.3(5) | ISO 27001:2022 A.8.15' },
+        { id: 'ECO-019', name: 'Ekoloji məlumatın şifrələnməsi', category: 'Crypto', framework: 'Kİİ Qaydaları 4.1.3(6) | ISO 27001:2022 A.8.24' },
+        { id: 'ECO-020', name: 'Hava keyfiyyəti monitorinq şəbəkəsi (IoT)', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.3 | EPA 40 CFR 50' },
+        { id: 'ECO-021', name: 'Radioaktiv tullantı sistemi müdafiəsi', category: 'Safety', framework: 'Kİİ Qaydaları 4.1.3 | NRC 10 CFR 20' },
+        // 4.1.4 Əməliyyatların idarəedilməsi
+        { id: 'ECO-022', name: 'Ekoloji əməliyyat prosedurlarının sənədləşdirilməsi', category: 'Ops', framework: 'Kİİ Qaydaları 4.1.4(1) | ISO 14001:2015' },
+        { id: 'ECO-023', name: 'Ekoloji sistem dəyişiklik idarəetməsi', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(2) | ISO 14001:2015' },
+        { id: 'ECO-024', name: 'Ekoloji sensor aktivlər inventarı', category: 'Assets', framework: 'Kİİ Qaydaları 4.1.4(3) | ISO 17025' },
+        { id: 'ECO-025', name: 'Ekoloji sistem layihə ekspertizası', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(4) | EPA NEPA' },
+        { id: 'ECO-026', name: 'Ekoloji Sensor Zəiflik İdarəetməsi', category: 'Vulnerability', framework: 'Kİİ Qaydaları 4.1.4 | NISTIR 8228' },
+        { id: 'ECO-027', name: 'Su Çirklənməsi Aşkarlama Sistemi', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.4 | EPA CWA' },
+        { id: 'ECO-028', name: 'Torpaq/Hava Çirklənmə Sensor Şəbəkəsi', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.4 | EPA CERCLA' },
+        // 4.1.5 Kiberinsidentlərin idarəedilməsi
+        { id: 'ECO-029', name: 'Kiberinsident idarəetmə prosedurları', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(1) | ISO 27001:2022 A.5.24' },
+        { id: 'ECO-030', name: 'Ekoloji sistemi kiberinsidentlərinin aşkarlanması', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.5(2) | EPA Guidelines' },
+        { id: 'ECO-031', name: 'Real vaxt kommunikasiya (CERT bildirim)', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(3) | ISO 27001:2022 A.5.26' },
+        { id: 'ECO-032', name: 'İnsident sonrası hesabatlılıq', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(4) | EPA Incident Report' },
+        { id: 'ECO-033', name: 'Milli kibermərkəzə bildirim', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5 | Kİİ Qanunu 20-4' },
+        { id: 'ECO-034', name: 'Ekoloji Sensor Sabotaj Aşkarlama', category: 'Cyber', framework: 'Kİİ Qaydaları 4.1.5 | EPA Guidelines' },
+        { id: 'ECO-035', name: 'Kimyəvi Anbar İzinsiz Dəyişiklik Aşkarlama', category: 'Safety', framework: 'Kİİ Qaydaları 4.1.5 | OSHA PSM' },
+        // 4.1.6 Fəaliyyətin fasiləsizliyi
+        { id: 'ECO-036', name: 'Fövqəladə hal strategiyası (Ecology BCP)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(1) | ISO 14001:2015' },
+        { id: 'ECO-037', name: 'Ekoloji fəaliyyətin davamlılıq planı (DRP)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | ISO 14001:2015' },
+        { id: 'ECO-038', name: 'Bərpa planının illik sınağı', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | ISO 27001:2022 A.5.30' },
+        { id: 'ECO-039', name: 'Dayanma müddəti həddi (RTO/RPO Sensor)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(3) | ISO 14001:2015' },
+        { id: 'ECO-040', name: 'Ekoloji Məlumat Ehtiyatı (Backup)', category: 'Backup', framework: 'Kİİ Qaydaları 4.1.6 | ISO 27001:2022 A.8.13' },
+        { id: 'ECO-041', name: 'Alternativ Ekoloji Monitorinq Stansiyası', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.6 | EPA Guidelines' },
+        { id: 'ECO-042', name: 'Yanğın Aşkarlama / Meşə Müdafiə Sistemi', category: 'Emergency', framework: 'Kİİ Qaydaları 4.1.6 | USFS Guidelines' },
+        // 4.1.7 Monitorinq, audit, müdaxilə sınaqları
+        { id: 'ECO-043', name: 'Reyestrə məlumat daxil edilməsi', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(1) | ISO 14001:2015' },
+        { id: 'ECO-044', name: 'Fasiləsiz 24/7 monitorinq (Sensor/loq)', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(2) | EPA 40 CFR 50' },
+        { id: 'ECO-045', name: 'Daxili audit planı (illik)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(3) | ISO 14001:2015' },
+        { id: 'ECO-046', name: 'Penetrasiya sınaqları (ildə 1+ dəfə)', category: 'Test', framework: 'Kİİ Qaydaları 4.1.7(4) | ISO 27001:2022 A.8.8' },
+        { id: 'ECO-047', name: 'Kibermərkəzə real vaxt məlumat ötürmə', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(5) | Kİİ Qanunu 20-4' },
+        { id: 'ECO-048', name: 'Konfiqurasiya qeydiyyatı (Sensor CMDB)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(6) | ISO 17025' },
+        { id: 'ECO-049', name: 'Tənzimləyici Uyğunluq (EPA/ISO14001/Yerli)', category: 'Compliance', framework: 'Kİİ Qaydaları 4.1.7 | EPA NEPA' }
     ],
     private: [
-        { id: 'PVT-001', name: 'Corporate Network Security', category: 'Network', framework: 'ISO 27001:2022 A.8.20' },
-        { id: 'PVT-002', name: 'Employee Data Protection', category: 'HR', framework: 'ISO 27001:2022 A.5.34' },
-        { id: 'PVT-003', name: 'Customer Database', category: 'CRM', framework: 'ISO 27001:2022 A.8.10' },
-        { id: 'PVT-004', name: 'Financial Reports', category: 'Finance', framework: 'SOX 404' },
-        { id: 'PVT-005', name: 'Email System', category: 'Comms', framework: 'ISO 27001:2022 A.8.11' },
-        { id: 'PVT-006', name: 'Video Conferencing', category: 'Comms', framework: 'ISO 27001:2022 A.8.11' },
-        { id: 'PVT-007', name: 'Document Management', category: 'Systems', framework: 'ISO 27001:2022 A.8.10' },
-        { id: 'PVT-008', name: 'VPN Access', category: 'Network', framework: 'ISO 27001:2022 A.6.7' },
-        { id: 'PVT-009', name: 'Antivirus Software', category: 'Software', framework: 'ISO 27001:2022 A.8.8' },
-        { id: 'PVT-010', name: 'Firewall Configuration', category: 'Network', framework: 'ISO 27001:2022 A.8.20' },
-        { id: 'PVT-011', name: 'Backup System', category: 'Backup', framework: 'ISO 27001:2022 A.8.13' },
-        { id: 'PVT-012', name: 'Access Control (RBAC)', category: 'Access', framework: 'ISO 27001:2022 A.5.15' },
-        { id: 'PVT-013', name: 'Password Policy', category: 'Access', framework: 'ISO 27001:2022 A.5.17' },
-        { id: 'PVT-014', name: 'Multi-Factor Authentication', category: 'Access', framework: 'ISO 27001:2022 A.8.5' },
-        { id: 'PVT-015', name: 'Vulnerability Scanning', category: 'Vulnerability', framework: 'ISO 27001:2022 A.8.8' },
-        { id: 'PVT-016', name: 'Penetration Testing', category: 'Test', framework: 'ISO 27001:2022 A.8.8' },
-        { id: 'PVT-017', name: 'Incident Response Plan', category: 'Incident', framework: 'ISO 27001:2022 A.5.24' },
-        { id: 'PVT-018', name: 'Security Training', category: 'Training', framework: 'ISO 27001:2022 A.6.3' },
-        { id: 'PVT-019', name: 'Physical Security', category: 'Physical', framework: 'ISO 27001:2022 A.7.1' },
-        { id: 'PVT-020', name: 'CCTV Monitoring', category: 'Physical', framework: 'ISO 27001:2022 A.7.2' },
-        { id: 'PVT-021', name: 'Mobile Device Management', category: 'Mobile', framework: 'ISO 27001:2022 A.5.20' },
-        { id: 'PVT-022', name: 'Cloud Security', category: 'Cloud', framework: 'ISO 27001:2022 A.5.23' },
-        { id: 'PVT-023', name: 'Data Loss Prevention', category: 'DLP', framework: 'ISO 27001:2022 A.8.11' },
-        { id: 'PVT-024', name: 'Encryption', category: 'Crypto', framework: 'ISO 27001:2022 A.8.24' },
-        { id: 'PVT-025', name: 'Audit Logs', category: 'Audit', framework: 'ISO 27001:2022 A.8.15' },
-        { id: 'PVT-026', name: 'HR Systems Security', category: 'HR', framework: 'GDPR Article 88' },
-        { id: 'PVT-027', name: 'Intellectual Property', category: 'Legal', framework: 'ISO 27001:2022 A.8.10' },
-        { id: 'PVT-028', name: 'Supply Chain Security', category: 'Supply Chain', framework: 'ISO 27001:2022 A.5.19' },
-        { id: 'PVT-029', name: 'Secure SDLC', category: 'Dev', framework: 'ISO 27001:2022 A.8.25' },
-        { id: 'PVT-030', name: 'Customer Support Security', category: 'Support', framework: 'PCI DSS Req 8' },
-        { id: 'PVT-031', name: 'Marketing Databases', category: 'Marketing', framework: 'GDPR Article 7' },
-        { id: 'PVT-032', name: 'Payment Processing', category: 'Finance', framework: 'PCI DSS 4.0' },
-        { id: 'PVT-033', name: 'Internal Communications', category: 'Comms', framework: 'ISO 27001:2022 A.8.11' },
-        { id: 'PVT-034', name: 'Zero Trust Architecture', category: 'Network', framework: 'NIST SP 800-207' },
-        { id: 'PVT-035', name: 'Business Impact Analysis', category: 'Risk', framework: 'ISO 27001 Clause 6.1' }
+        // 4.1.1 Ümumi idarəetmə və risk
+        { id: 'PVT-001', name: 'Təhlükəsizlik prosedurlarının hazırlanması', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | ISO 27001:2022 A.5.1' },
+        { id: 'PVT-002', name: 'Reyestrdə prosedur yerləşdirilməsi', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1(1) | ISO 27001:2022 A.5.1' },
+        { id: 'PVT-003', name: 'Korporativ risk qiymətləndirməsi', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | ISO 27001:2022 Cl.6.1' },
+        { id: 'PVT-004', name: 'Səlahiyyət bölgüsü (CISO/IT Məsul)', category: 'Management', framework: 'Kİİ Qaydaları 4.1.1(3) | ISO 27001:2022 A.5.2' },
+        { id: 'PVT-005', name: 'Üçüncü tərəf müqavilə tələbləri', category: 'Supplier', framework: 'Kİİ Qaydaları 4.1.1(4) | ISO 27001:2022 A.5.19' },
+        { id: 'PVT-006', name: 'İnformasiya Təhlükəsizliyi Siyasəti', category: 'Policy', framework: 'Kİİ Qaydaları 4.1.1 | ISO 27001:2022 A.5.1' },
+        { id: 'PVT-007', name: 'Biznes Risk Qiymətləndirməsi (BIA)', category: 'Risk', framework: 'Kİİ Qaydaları 4.1.1(2) | ISO 27001 Cl.6.1' },
+        // 4.1.2 İnsan resursları
+        { id: 'PVT-008', name: 'Korporativ personalın mütəmadi təlimi', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | ISO 27001:2022 A.6.3' },
+        { id: 'PVT-009', name: 'İşə qəbulda təhlükəsizlik öhdəliyi imzalanması', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | ISO 27001:2022 A.6.1' },
+        { id: 'PVT-010', name: 'İşdən çıxmada hesab deaktivasiyası', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2(2) | ISO 27001:2022 A.6.5' },
+        { id: 'PVT-011', name: 'Personal təhlükəsizlik yoxlaması', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | ISO 27001:2022 A.5.15' },
+        { id: 'PVT-012', name: 'Məlumatların açıqlanmaması öhdəliyi (NDA)', category: 'HR', framework: 'Kİİ Qaydaları 4.1.2 | ISO 27001:2022 A.6.2' },
+        { id: 'PVT-013', name: 'Maarifləndirici tədbirlər (Fişinq Simulyasiya)', category: 'Training', framework: 'Kİİ Qaydaları 4.1.2(1) | ISO 27001:2022 A.6.3' },
+        // 4.1.3 Fiziki və informasiya təhlükəsizliyi
+        { id: 'PVT-014', name: 'Ofis/server otağına icazəsiz girişin qarşısı', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(1) | ISO 27001:2022 A.7.1' },
+        { id: 'PVT-015', name: 'Korporativ aktivlərin itirilməsinin qarşısı', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(2) | ISO 27001:2022 A.7.9' },
+        { id: 'PVT-016', name: 'Lisenziyalı proqram/aparat vasitələri', category: 'Software', framework: 'Kİİ Qaydaları 4.1.3(3) | ISO 27001:2022 A.8.8' },
+        { id: 'PVT-017', name: 'Davamlı enerji (UPS/Generator ofis)', category: 'Physical', framework: 'Kİİ Qaydaları 4.1.3(4) | ISO 27001:2022 A.7.11' },
+        { id: 'PVT-018', name: 'Giriş nəzarəti (RBAC/MFA/loq-fayllar)', category: 'Access', framework: 'Kİİ Qaydaları 4.1.3(5) | ISO 27001:2022 A.5.15' },
+        { id: 'PVT-019', name: 'Korporativ məlumatın şifrələnməsi', category: 'Crypto', framework: 'Kİİ Qaydaları 4.1.3(6) | ISO 27001:2022 A.8.24' },
+        { id: 'PVT-020', name: 'Korporativ Şəbəkə Seqmentasiyası', category: 'Network', framework: 'Kİİ Qaydaları 4.1.3 | ISO 27001:2022 A.8.22' },
+        { id: 'PVT-021', name: 'Endpoint Müdafiəsi (EDR/Antivirus)', category: 'Endpoint', framework: 'Kİİ Qaydaları 4.1.3 | ISO 27001:2022 A.8.8' },
+        // 4.1.4 Əməliyyatların idarəedilməsi
+        { id: 'PVT-022', name: 'Korporativ əməliyyat prosedurlarının sənədləşdirilməsi', category: 'Ops', framework: 'Kİİ Qaydaları 4.1.4(1) | ISO 27001:2022 A.5.37' },
+        { id: 'PVT-023', name: 'Dəyişikliklərin idarəedilməsi (Change Mgmt)', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(2) | ISO 27001:2022 A.8.32' },
+        { id: 'PVT-024', name: 'Korporativ aktivlər inventarı (CMDB)', category: 'Assets', framework: 'Kİİ Qaydaları 4.1.4(3) | ISO 27001:2022 A.5.9' },
+        { id: 'PVT-025', name: 'İT sistem layihə ekspertizası', category: 'Management', framework: 'Kİİ Qaydaları 4.1.4(4) | ISO 27001:2022 A.8.25' },
+        { id: 'PVT-026', name: 'Zəiflik İdarəetməsi (Patch/Scan)', category: 'Vulnerability', framework: 'Kİİ Qaydaları 4.1.4 | ISO 27001:2022 A.8.8' },
+        { id: 'PVT-027', name: 'Bulud Təhlükəsizliyi (SaaS/IaaS)', category: 'Cloud', framework: 'Kİİ Qaydaları 4.1.4 | ISO 27001:2022 A.5.23' },
+        { id: 'PVT-028', name: 'Məlumat Sızması Müdafiəsi (DLP)', category: 'DLP', framework: 'Kİİ Qaydaları 4.1.4 | ISO 27001:2022 A.8.12' },
+        // 4.1.5 Kiberinsidentlərin idarəedilməsi
+        { id: 'PVT-029', name: 'Kiberinsident idarəetmə prosedurları', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(1) | ISO 27001:2022 A.5.24' },
+        { id: 'PVT-030', name: 'Kiberinsidentlərin aşkarlanması (SIEM)', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.5(2) | ISO 27001:2022 A.8.16' },
+        { id: 'PVT-031', name: 'Real vaxt kommunikasiya (CERT bildirim)', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(3) | ISO 27001:2022 A.5.26' },
+        { id: 'PVT-032', name: 'İnsident sonrası hesabatlılıq (Post-Incident)', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5(4) | ISO 27001:2022 A.5.27' },
+        { id: 'PVT-033', name: 'Milli kibermərkəzə bildirim (tələb olunarsa)', category: 'Incident', framework: 'Kİİ Qaydaları 4.1.5 | Kİİ Qanunu 20-4' },
+        { id: 'PVT-034', name: 'Ransomware / Sosial Mühəndislik Müdafiəsi', category: 'Cyber', framework: 'Kİİ Qaydaları 4.1.5 | ISO 27001:2022 A.5.7' },
+        { id: 'PVT-035', name: 'Email Təhlükəsizliyi (Anti-spam/DMARC)', category: 'Cyber', framework: 'Kİİ Qaydaları 4.1.5 | ISO 27001:2022 A.8.23' },
+        // 4.1.6 Fəaliyyətin fasiləsizliyi
+        { id: 'PVT-036', name: 'Fövqəladə hal strategiyası (Business BCP)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(1) | ISO 27001:2022 A.5.29' },
+        { id: 'PVT-037', name: 'Biznes fəaliyyətin davamlılıq planı (DRP)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | ISO 27001:2022 A.5.29' },
+        { id: 'PVT-038', name: 'Bərpa planının illik sınağı (DR Test)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(2) | ISO 27001:2022 A.5.30' },
+        { id: 'PVT-039', name: 'Dayanma müddəti həddi (RTO/RPO)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6(3) | ISO 27001:2022 A.5.30' },
+        { id: 'PVT-040', name: 'Korporativ Data Ehtiyatı (Backup 3-2-1)', category: 'Backup', framework: 'Kİİ Qaydaları 4.1.6 | ISO 27001:2022 A.8.13' },
+        { id: 'PVT-041', name: 'Alternativ İş Yeri (Hot Standby/Remote)', category: 'BCM', framework: 'Kİİ Qaydaları 4.1.6 | ISO 27001:2022 A.5.29' },
+        { id: 'PVT-042', name: 'Uzaqdan Giriş Təhlükəsizliyi (VPN/ZTNA)', category: 'Remote', framework: 'Kİİ Qaydaları 4.1.6 | ISO 27001:2022 A.6.7' },
+        // 4.1.7 Monitorinq, audit, müdaxilə sınaqları
+        { id: 'PVT-043', name: 'Reyestrə məlumat daxil edilməsi', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(1) | ISO 27001:2022 Cl.9.1' },
+        { id: 'PVT-044', name: 'Fasiləsiz 24/7 monitorinq (SIEM/loq)', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(2) | ISO 27001:2022 A.8.15' },
+        { id: 'PVT-045', name: 'Daxili audit planı (illik)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(3) | ISO 27001:2022 Cl.9.2' },
+        { id: 'PVT-046', name: 'Penetrasiya sınaqları (ildə 1+ dəfə)', category: 'Test', framework: 'Kİİ Qaydaları 4.1.7(4) | ISO 27001:2022 A.8.8' },
+        { id: 'PVT-047', name: 'Kibermərkəzə real vaxt məlumat ötürmə', category: 'Monitoring', framework: 'Kİİ Qaydaları 4.1.7(5) | Kİİ Qanunu 20-4' },
+        { id: 'PVT-048', name: 'Konfiqurasiya qeydiyyatı (CMDB/tamlıq)', category: 'Audit', framework: 'Kİİ Qaydaları 4.1.7(6) | ISO 27001:2022 A.8.9' },
+        { id: 'PVT-049', name: 'Hüquqi uyğunluq (GDPR/Yerli qanun/PCI)', category: 'Compliance', framework: 'Kİİ Qaydaları 4.1.7 | ISO 27001:2022 A.5.31' }
     ]
 };
 
@@ -4384,52 +4638,46 @@ let riskHeatmapData = {};
 
 // Risk hesablama funksiyası
 function calculateRiskScore(infraId) {
-    const controls = infrastructureControls[infraId] || [];
     let totalRisk = 0;
     let totalControls = 0;
     let criticalCount = 0, highCount = 0, mediumCount = 0, lowCount = 0;
     
-    // Cari seçilmiş infrastrukturun kontrollarını yoxla
     const rows = document.querySelectorAll('#controlsTable tbody tr');
     
     rows.forEach(row => {
-        const risk = row.cells[5]?.querySelector('select')?.value;
-        const status = row.cells[4]?.querySelector('select')?.value;
+        const statusSel = row.cells[4]?.querySelector('select');
+        const status = statusSel ? statusSel.value : 'no';
+        if (status === 'na') return;
         
-        if (risk && status !== 'na') {
-            totalControls++;
-            
-            // Risk balları: critical=100, high=70, medium=40, low=10
-            let riskPoint = 0;
-            switch(risk) {
-                case 'critical': riskPoint = 100; criticalCount++; break;
-                case 'high': riskPoint = 70; highCount++; break;
-                case 'medium': riskPoint = 40; mediumCount++; break;
-                case 'low': riskPoint = 10; lowCount++; break;
-            }
-            
-            // Status faktor: no=1, partial=0.7, yes=0.3
-            let statusFactor = 1;
-            switch(status) {
-                case 'yes': statusFactor = 0.3; break;
-                case 'partial': statusFactor = 0.7; break;
-                case 'no': statusFactor = 1; break;
-            }
-            
-            totalRisk += riskPoint * statusFactor;
+        const controlId = row.getAttribute('data-control-id');
+        const badge = controlId ? document.getElementById('risk-' + controlId) : null;
+        let risk = 'low';
+        if (badge) {
+            const txt = badge.textContent.trim().toLowerCase();
+            if (txt.includes('critical')) risk = 'critical';
+            else if (txt.includes('high')) risk = 'high';
+            else if (txt.includes('medium')) risk = 'medium';
         }
+        
+        totalControls++;
+        let riskPoint = 0;
+        switch(risk) {
+            case 'critical': riskPoint = 100; criticalCount++; break;
+            case 'high': riskPoint = 70; highCount++; break;
+            case 'medium': riskPoint = 40; mediumCount++; break;
+            case 'low': riskPoint = 10; lowCount++; break;
+        }
+        let statusFactor = 1;
+        switch(status) {
+            case 'yes': statusFactor = 0.3; break;
+            case 'partial': statusFactor = 0.7; break;
+            case 'no': statusFactor = 1; break;
+        }
+        totalRisk += riskPoint * statusFactor;
     });
     
     const avgRisk = totalControls > 0 ? Math.round(totalRisk / totalControls) : 0;
-    
-    return {
-        score: avgRisk,
-        critical: criticalCount,
-        high: highCount,
-        medium: mediumCount,
-        low: lowCount,
-        total: totalControls
-    };
+    return { score: avgRisk, critical: criticalCount, high: highCount, medium: mediumCount, low: lowCount, total: totalControls };
 }
 
 // Bütün infrastrukturların riskini hesabla
@@ -4783,40 +5031,240 @@ function selectInfrastructure(infraId) {
     }
 }
 
-// Render controls - MODIFIED for CLICK tooltip
-function renderControls(infraId) {
+// ---- STANDARD → RISK mapping ----
+// Maps keyword in framework field to a default risk level
+const standardRiskMap = [
+    { key: 'Kİİ Qaydaları',  risk: 'critical' },
+    { key: 'NERC CIP',   risk: 'critical' },
+    { key: 'ICS',        risk: 'critical' },
+    { key: 'SCADA',      risk: 'critical' },
+    { key: 'NRC',        risk: 'critical' },
+    { key: 'HIPAA',      risk: 'high' },
+    { key: 'PCI DSS',    risk: 'high' },
+    { key: 'PCI',        risk: 'high' },
+    { key: 'SWIFT',      risk: 'high' },
+    { key: 'GDPR',       risk: 'high' },
+    { key: 'ISO 27001',  risk: 'medium' },
+    { key: 'ISO 27001:2022', risk: 'medium' },
+    { key: 'NIST SP 800-82', risk: 'critical' },
+    { key: 'NIST SP 800-53', risk: 'medium' },
+    { key: 'NIST',       risk: 'medium' },
+    { key: 'SOX',        risk: 'high' },
+    { key: 'ISPS',       risk: 'high' },
+    { key: 'ICAO',       risk: 'high' },
+    { key: 'EPA',        risk: 'medium' },
+    { key: 'OSHA',       risk: 'medium' },
+    { key: 'IEEE',       risk: 'medium' },
+    { key: 'IEC 62443',  risk: 'critical' },
+    { key: 'AWWA',       risk: 'medium' },
+    { key: 'GSMA',       risk: 'medium' },
+    { key: 'ISO 31000',  risk: 'medium' },
+    { key: 'FDIC',       risk: 'high' },
+    { key: 'AML',        risk: 'high' },
+    { key: 'FDA',        risk: 'high' },
+    { key: '3GPP',       risk: 'medium' },
+    { key: 'CENELEC',    risk: 'high' }
+];
+
+// Auto-compute risk from framework string
+function autoRiskFromFramework(framework) {
+    for (const rule of standardRiskMap) {
+        if (framework.includes(rule.key)) return rule.risk;
+    }
+    return 'low';
+}
+
+// Status → risk modifier: yes=lower, no=higher, partial=same, na=none
+function adjustRiskByStatus(baseRisk, status) {
+    const levels = ['low','medium','high','critical'];
+    let idx = levels.indexOf(baseRisk);
+    if (status === 'yes')     idx = Math.max(0, idx - 1);
+    else if (status === 'no') idx = Math.min(3, idx + 0); // stays same when No
+    else if (status === 'na') return 'low';
+    return levels[idx];
+}
+
+// Current active standard filter
+let activeStandardFilter = 'ALL';
+let currentInfraId = '';
+
+// Extract unique standards from controls
+function extractStandards(controls) {
+    const standards = new Set(['ALL']);
+    const keywords = ['Kİİ Qaydaları','ISO 27001','NIST','NERC CIP','PCI DSS','HIPAA','GDPR','SOX','SWIFT','IEC 62443','AWWA','GSMA','3GPP','ICAO','ISPS','EPA','OSHA','IEEE','NRC','FERC','AML','FDA','CENELEC'];
+    controls.forEach(c => {
+        keywords.forEach(kw => {
+            if (c.framework.includes(kw)) standards.add(kw);
+        });
+    });
+    return [...standards];
+}
+
+// Render standard filter buttons
+function renderStandardFilter(infraId) {
     const controls = infrastructureControls[infraId] || infrastructureControls.private;
+    const standards = extractStandards(controls);
+    const container = document.getElementById('standardFilterBtns');
+    
+    container.innerHTML = standards.map(std => {
+        const count = std === 'ALL' ? controls.length : controls.filter(c => c.framework.includes(std)).length;
+        const isActive = activeStandardFilter === std;
+        return `<button onclick="setStandardFilter('${std}','${infraId}')" 
+            style="padding:7px 16px; border-radius:20px; font-size:12px; cursor:pointer; font-family:'Rajdhani',sans-serif; font-weight:600; transition:all 0.25s;
+            background:${isActive ? 'linear-gradient(135deg,var(--primary),var(--secondary))' : 'rgba(0,243,255,0.1)'};
+            color:${isActive ? 'var(--dark)' : 'var(--primary)'};
+            border:1px solid ${isActive ? 'white' : 'var(--primary)'};
+            box-shadow:${isActive ? '0 0 20px var(--primary-glow)' : 'none'}">
+            ${std} <span style="opacity:0.8">(${count})</span>
+        </button>`;
+    }).join('');
+    
+    updateFilteredCount(infraId);
+}
+
+function updateFilteredCount(infraId) {
+    const controls = infrastructureControls[infraId] || infrastructureControls.private;
+    const filtered = activeStandardFilter === 'ALL' ? controls : controls.filter(c => c.framework.includes(activeStandardFilter));
+    const el = document.getElementById('filteredCount');
+    if (el) el.textContent = filtered.length + ' controls';
+}
+
+function setStandardFilter(std, infraId) {
+    activeStandardFilter = std;
+    renderStandardFilter(infraId);
+    renderControlRows(infraId);
+    updateStatistics();
+}
+
+// Render controls - with standard filter + auto risk
+function renderControls(infraId) {
+    currentInfraId = infraId;
+    activeStandardFilter = 'ALL';
+    renderStandardFilter(infraId);
+    renderControlRows(infraId);
+}
+
+function renderControlRows(infraId) {
+    const allControls = infrastructureControls[infraId] || infrastructureControls.private;
+    const controls = activeStandardFilter === 'ALL' 
+        ? allControls 
+        : allControls.filter(c => c.framework.includes(activeStandardFilter));
+    
     const tbody = document.getElementById('controlsTableBody');
     let html = '';
     
     controls.forEach(control => {
+        const baseRisk = autoRiskFromFramework(control.framework);
+        const riskLabel = { critical:'🔴 Critical', high:'🟠 High', medium:'🟡 Medium', low:'🟢 Low' };
+        const riskColor = { critical:'var(--danger)', high:'#ff6b00', medium:'var(--warning)', low:'var(--success)' };
+        
         html += `
-            <tr>
+            <tr data-control-id="${control.id}" data-base-risk="${baseRisk}">
                 <td><span class="control-id" onclick="showSolutionClick(event, '${control.id}')">${control.id}</span></td>
                 <td>${control.name}</td>
                 <td><small style="color: var(--text-secondary);">${control.framework}</small></td>
                 <td><span class="control-category">${control.category}</span></td>
                 <td>
-                    <select class="control-select" onchange="updateStatistics()">
+                    <select class="control-select" onchange="onStatusChange(this)">
                         <option value="yes">✅ Yes</option>
-                        <option value="no">❌ No</option>
+                        <option value="no" selected>❌ No</option>
                         <option value="partial">🟡 Partial</option>
                         <option value="na">⚪ N/A</option>
                     </select>
                 </td>
                 <td>
-                    <select class="risk-select" onchange="updateStatistics()">
-                        <option value="critical">🔴 Critical</option>
-                        <option value="high">🟠 High</option>
-                        <option value="medium">🟡 Medium</option>
-                        <option value="low">🟢 Low</option>
-                    </select>
+                    <div class="auto-risk-badge" id="risk-${control.id}" 
+                        style="display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:700; font-family:'Rajdhani',sans-serif;
+                        background:rgba(255,0,85,0.15); border:1px solid ${riskColor[baseRisk]}; color:${riskColor[baseRisk]};">
+                        ${riskLabel[baseRisk]}
+                    </div>
                 </td>
             </tr>
         `;
     });
     
     tbody.innerHTML = html;
+    updateStatistics();
+}
+
+// Called when status dropdown changes - auto update risk badge
+// Status → risk modifier: 
+// yes = risk azalır (1 pillə aşağı)
+// no = risk artır (1 pillə yuxarı)
+// partial = risk dəyişmir (eyni qalır)
+// na = risk göstərilmir (boz)
+function adjustRiskByStatus(baseRisk, status) {
+    const levels = ['low', 'medium', 'high', 'critical'];
+    let idx = levels.indexOf(baseRisk);
+    
+    if (status === 'yes') {
+        idx = Math.max(0, idx - 1); // 1 pillə aşağı
+    } else if (status === 'no') {
+        idx = Math.min(3, idx + 1); // 1 pillə yuxarı
+    } else if (status === 'partial') {
+        // partial - dəyişiklik yoxdur
+        idx = idx;
+    } else if (status === 'na') {
+        return 'na'; // N/A üçün xüsusi dəyər
+    }
+    
+    return levels[idx];
+}
+
+// Called when status dropdown changes - auto update risk badge
+function onStatusChange(selectEl) {
+    const row = selectEl.closest('tr');
+    const controlId = row.getAttribute('data-control-id');
+    const baseRisk = row.getAttribute('data-base-risk');
+    const status = selectEl.value;
+    
+    let newRisk = adjustRiskByStatus(baseRisk, status);
+    
+    // N/A üçün xüsusi göstərici
+    if (status === 'na' || newRisk === 'na') {
+        const badge = document.getElementById('risk-' + controlId);
+        if (badge) {
+            badge.style.background = 'rgba(150,150,150,0.1)';
+            badge.style.borderColor = 'rgba(150,150,150,0.5)';
+            badge.style.color = 'var(--text-secondary)';
+            badge.innerHTML = '⚪ N/A';
+            badge.setAttribute('data-risk', 'na');
+        }
+        updateStatistics();
+        return;
+    }
+    
+    const riskLabel = {
+        critical: '🔴 Critical',
+        high: '🟠 High', 
+        medium: '🟡 Medium',
+        low: '🟢 Low'
+    };
+    
+    const riskColor = {
+        critical: 'var(--danger)',
+        high: '#ff6b00',
+        medium: 'var(--warning)',
+        low: 'var(--success)'
+    };
+    
+    const riskBg = {
+        critical: 'rgba(255,0,85,0.15)',
+        high: 'rgba(255,107,0,0.15)',
+        medium: 'rgba(255,214,0,0.15)',
+        low: 'rgba(0,255,157,0.15)'
+    };
+    
+    const badge = document.getElementById('risk-' + controlId);
+    if (badge) {
+        badge.style.background = riskBg[newRisk];
+        badge.style.borderColor = riskColor[newRisk];
+        badge.style.color = riskColor[newRisk];
+        badge.innerHTML = riskLabel[newRisk];
+        badge.setAttribute('data-risk', newRisk);
+    }
+    
+    updateStatistics();
 }
 
 // Reset all statistics to 0
@@ -4858,13 +5306,25 @@ function updateStatistics() {
     let critical = 0, high = 0, medium = 0, low = 0;
     
     rows.forEach(row => {
-        const status = row.cells[4].querySelector('select').value;
-        const risk = row.cells[5].querySelector('select').value;
+        const statusSel = row.cells[4]?.querySelector('select');
+        const status = statusSel ? statusSel.value : 'no';
         
         if (status === 'yes') yes++;
         else if (status === 'no') no++;
         else if (status === 'partial') partial++;
-        else if (status === 'na') na++;
+        else if (status === 'na') { na++; return; }
+        
+        // Read risk from badge data or text
+        const controlId = row.getAttribute('data-control-id');
+        const badge = controlId ? document.getElementById('risk-' + controlId) : null;
+        let risk = 'low';
+        if (badge) {
+            const txt = badge.textContent.trim().toLowerCase();
+            if (txt.includes('critical')) risk = 'critical';
+            else if (txt.includes('high')) risk = 'high';
+            else if (txt.includes('medium')) risk = 'medium';
+            else if (txt.includes('n/a')) return;
+        }
         
         if (risk === 'critical') critical++;
         else if (risk === 'high') high++;
@@ -5941,7 +6401,331 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Generate Findings - real data based on controls
+function generateFindings() {
+    const findings = [];
+    const rows = document.querySelectorAll('#controlsTable tbody tr');
+    
+    rows.forEach(row => {
+        const controlId = row.cells[0]?.textContent?.trim() || '';
+        const controlName = row.cells[1]?.textContent?.trim() || '';
+        const statusSelect = row.cells[4]?.querySelector('select');
+        const status = statusSelect ? statusSelect.value : 'no';
+        
+        // Get risk from badge
+        let risk = 'low';
+        const badge = controlId ? document.getElementById('risk-' + controlId) : null;
+        if (badge) {
+            const txt = badge.textContent.trim().toLowerCase();
+            if (txt.includes('critical')) risk = 'critical';
+            else if (txt.includes('high')) risk = 'high';
+            else if (txt.includes('medium')) risk = 'medium';
+        }
+        
+        // Only include non-compliant or high-risk controls
+        if (status === 'no' || status === 'partial' || risk === 'critical' || risk === 'high') {
+            
+            // Get solution for this control
+            const solution = solutions[controlId] || solutions['DEFAULT'];
+            
+            findings.push({
+                title: `${controlName} (${controlId}) - ${risk.toUpperCase()} Risk`,
+                severity: risk,
+                finding: `${controlName} (${controlId}) kontrolunda çatışmazlıqlar aşkar edildi. Bu kontrol ${status === 'no' ? 'tam uyğun deyil' : status === 'partial' ? 'qismən uyğundur' : 'yüksək risk daşıyır'}.`,
+                reason: 'Kontrolun tam tətbiq edilməməsi, müntəzəm yoxlanılmaması və ya sənədləşdirilməməsi.',
+                reference: solution.ref,
+                risk: getRiskDescription(risk, controlName),
+                recommendation: solution.solution
+            });
+        }
+    });
+    
+    // If no findings, add sample findings
+    if (findings.length === 0) {
+        findings.push({
+            title: 'Kiberhadisələrə qarşı cavab planının təkmil olmaması',
+            severity: 'high',
+            finding: 'Kiberhadisələrə qarşı cavab planı (yalnız viruslara qarşı) olsa da, planın daha da təkmilləşdirilməsinə ehtiyac var. Kiberhadisələrin təsnifatı aparılmamış və onlara qarşı cavab tam əhatə olunmamışdır.',
+            reason: 'ISMS (Information Security Management System) təkmil olmaması.',
+            reference: 'ISO 27002:2022 A.5.24 (Incident Management), A.5.25 (Response)',
+            risk: 'Baş verə biləcək kiberhadisələrə qarşı anında cavab planının olmaması məlumat itkisinə səbəb ola bilər.',
+            recommendation: 'Kiberhadisələrə qarşı cavab planının təkmilləşdirilməsini, hadisələrin təsnifatının aparılmasını tövsiyə edirik.'
+        });
+    }
+    
+    return findings.slice(0, 5); // Return top 5 findings
+}
+
+// Get risk description
+function getRiskDescription(risk, controlName) {
+    const risks = {
+        critical: `${controlName} kontrolunun olmaması kritik məlumatların itirilməsi, sistemin dayanması və maliyyə itkilərinə səbəb ola bilər.`,
+        high: `${controlName} kontrolundakı çatışmazlıqlar əməliyyat fəaliyyətinin pozulmasına səbəb ola bilər.`,
+        medium: `${controlName} kontrolundakı zəifliklər uzun müddətdə təhlükəsizlik problemlərinə səbəb ola bilər.`,
+        low: `${controlName} kontrolundakı kiçik çatışmazlıqlar minimal risk daşıyır.`
+    };
+    return risks[risk] || risks.medium;
+}
+
+// Generate PDF - YENİ VERSİYA
+function generatePDF() {
+    console.log('generatePDF started');
+    
+    const clientSelect = document.getElementById('reportInfrastructure');
+    const clientName = clientSelect.options[clientSelect.selectedIndex]?.text || 'Government';
+    const framework = document.querySelector('.framework-tab.active')?.textContent || 'NERC CIP';
+    
+    // Get current statistics
+    const totalControls = document.getElementById('totalControlsKPI')?.textContent || '0';
+    const yes = document.getElementById('compliantYes')?.textContent || '0';
+    const no = document.getElementById('compliantNo')?.textContent || '0';
+    const partial = document.getElementById('compliantPartial')?.textContent || '0';
+    const na = document.getElementById('compliantNa')?.textContent || '0';
+    const compliance = document.getElementById('totalCompliance')?.textContent || '0%';
+    
+    const critical = document.getElementById('criticalThreats')?.textContent || '0';
+    const high = document.getElementById('highThreats')?.textContent || '0';
+    const medium = document.getElementById('mediumThreats')?.textContent || '0';
+    const low = document.getElementById('lowThreats')?.textContent || '0';
+    
+    // Generate findings
+    const findings = generateFindings();
+    
+    const pdfContent = document.getElementById('pdfContent');
+    const date = new Date();
+    const formattedDate = date.toLocaleDateString('en-US') + ' ' + date.toLocaleTimeString('en-US');
+    
+    let findingsHTML = '';
+    findings.forEach((finding, index) => {
+        const severityColor = finding.severity === 'critical' ? 'var(--danger)' : 
+                             finding.severity === 'high' ? '#ff6b00' : 'var(--warning)';
+        
+        findingsHTML += `
+            <div style="margin-bottom: 25px; padding: 15px; background: rgba(255,0,85,0.05); border-left: 4px solid ${severityColor}; border-radius: 5px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <div style="font-family: 'Orbitron'; color: var(--primary);">🔍 FINDING ${index + 1}: ${finding.title}</div>
+                    <div style="color: ${severityColor}; font-weight: bold;">${finding.severity.toUpperCase()}</div>
+                </div>
+                
+                <div style="margin-bottom: 10px;">
+                    <div style="color: var(--primary); font-weight: bold; margin-bottom: 5px;">📌 Tapıntı:</div>
+                    <div style="color: var(--text-secondary); margin-left: 15px;">${finding.finding}</div>
+                </div>
+                
+                <div style="margin-bottom: 10px;">
+                    <div style="color: var(--primary); font-weight: bold; margin-bottom: 5px;">⚠️ Səbəb:</div>
+                    <div style="color: var(--text-secondary); margin-left: 15px;">${finding.reason}</div>
+                </div>
+                
+                <div style="margin-bottom: 10px;">
+                    <div style="color: var(--primary); font-weight: bold; margin-bottom: 5px;">📚 İstinad:</div>
+                    <div style="color: var(--text-secondary); margin-left: 15px;">${finding.reference}</div>
+                </div>
+                
+                <div style="margin-bottom: 10px;">
+                    <div style="color: var(--primary); font-weight: bold; margin-bottom: 5px;">💥 Risk:</div>
+                    <div style="color: var(--text-secondary); margin-left: 15px;">${finding.risk}</div>
+                </div>
+                
+                <div>
+                    <div style="color: var(--primary); font-weight: bold; margin-bottom: 5px;">✅ Tövsiyə:</div>
+                    <div style="color: var(--success); margin-left: 15px;">${finding.recommendation}</div>
+                </div>
+            </div>
+        `;
+    });
+    
+    pdfContent.innerHTML = `
+        <div class="pdf-header">
+            <div class="pdf-title">CRITICAL INFRASTRUCTURE SECURITY REPORT</div>
+            <button class="pdf-close" onclick="closePDF()"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <div class="pdf-section">
+            <div class="pdf-section-title">📋 GENERAL INFORMATION</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div><strong>Client:</strong> ${clientName}</div>
+                <div><strong>Framework:</strong> ${framework}</div>
+                <div><strong>Date:</strong> ${formattedDate}</div>
+                <div><strong>Report ID:</strong> CI-${Math.random().toString(36).substr(2, 8).toUpperCase()}</div>
+                <div><strong>Overall Compliance:</strong> <span style="color: ${parseInt(compliance) > 70 ? 'var(--success)' : parseInt(compliance) > 40 ? 'var(--warning)' : 'var(--danger)'}">${compliance}</span></div>
+                <div><strong>Risk Level:</strong> <span style="color: ${parseInt(critical) > 0 ? 'var(--danger)' : parseInt(high) > 0 ? '#ff6b00' : 'var(--success)'}">${parseInt(critical) > 0 ? 'CRITICAL' : parseInt(high) > 0 ? 'HIGH' : 'NORMAL'}</span></div>
+            </div>
+        </div>
+        
+        <div class="pdf-section">
+            <div class="pdf-section-title">📊 COMPLIANCE SUMMARY</div>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
+                <div style="text-align: center; background: rgba(0,255,157,0.1); padding: 10px; border-radius: 8px;">
+                    <div style="font-size: 24px; color: var(--success);">${yes}</div>
+                    <div style="font-size: 11px;">Compliant</div>
+                </div>
+                <div style="text-align: center; background: rgba(255,0,85,0.1); padding: 10px; border-radius: 8px;">
+                    <div style="font-size: 24px; color: var(--danger);">${no}</div>
+                    <div style="font-size: 11px;">Non-Compliant</div>
+                </div>
+                <div style="text-align: center; background: rgba(255,214,0,0.1); padding: 10px; border-radius: 8px;">
+                    <div style="font-size: 24px; color: var(--warning);">${partial}</div>
+                    <div style="font-size: 11px;">Partial</div>
+                </div>
+                <div style="text-align: center; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+                    <div style="font-size: 24px; color: var(--text-secondary);">${na}</div>
+                    <div style="font-size: 11px;">N/A</div>
+                </div>
+            </div>
+            <div class="progress-bar" style="margin: 10px 0;">
+                <div class="progress-fill" style="width: ${compliance};"></div>
+            </div>
+            <div style="text-align: right; font-size: 12px; color: var(--text-secondary);">Total Controls: ${totalControls}</div>
+        </div>
+        
+        <div class="pdf-section">
+            <div class="pdf-section-title">⚠️ THREAT LANDSCAPE</div>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
+                <div style="text-align: center;">
+                    <div style="font-size: 28px; color: var(--danger);">${critical}</div>
+                    <div style="font-size: 11px;">CRITICAL</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 28px; color: #ff6b00;">${high}</div>
+                    <div style="font-size: 11px;">HIGH</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 28px; color: var(--warning);">${medium}</div>
+                    <div style="font-size: 11px;">MEDIUM</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 28px; color: var(--success);">${low}</div>
+                    <div style="font-size: 11px;">LOW</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="pdf-section">
+            <div class="pdf-section-title">🔍 DETAILED FINDINGS & RECOMMENDATIONS</div>
+            ${findingsHTML || '<div style="text-align: center; padding: 30px; color: var(--success);">✅ No critical findings detected.</div>'}
+        </div>
+        
+        <button class="pdf-download" onclick="downloadPDF()">
+            <i class="fas fa-download"></i> DOWNLOAD PDF REPORT
+        </button>
+    `;
+    
+    document.getElementById('pdfPreview').classList.add('active');
+    
+    // Store data for download
+    window.pdfData = {
+        clientName,
+        framework,
+        formattedDate,
+        totalControls,
+        yes,
+        no,
+        partial,
+        na,
+        compliance,
+        critical,
+        high,
+        medium,
+        low,
+        findings
+    };
+    
+    console.log('generatePDF completed');
+}
+
+// Close PDF preview
+function closePDF() {
+    document.getElementById('pdfPreview').classList.remove('active');
+}
+
+// Download PDF
+function downloadPDF() {
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
+        
+        const data = window.pdfData || {};
+        
+        // Colors
+        const primary = [0, 243, 255];
+        const secondary = [255, 0, 229];
+        const success = [0, 255, 157];
+        const danger = [255, 0, 85];
+        const warning = [255, 214, 0];
+        
+        // Header
+        doc.setFillColor(10, 10, 20);
+        doc.rect(0, 0, 210, 40, 'F');
+        
+        doc.setFontSize(20);
+        doc.setTextColor(primary[0], primary[1], primary[2]);
+        doc.setFont('helvetica', 'bold');
+        doc.text('CRITICAL INFRASTRUCTURE', 105, 20, { align: 'center' });
+        doc.setFontSize(16);
+        doc.setTextColor(secondary[0], secondary[1], secondary[2]);
+        doc.text('SECURITY REPORT', 105, 30, { align: 'center' });
+        
+        // Info
+        doc.setFontSize(10);
+        doc.setTextColor(200, 200, 200);
+        doc.text(`Client: ${data.clientName || 'Government'}`, 20, 50);
+        doc.text(`Framework: ${data.framework || 'NERC CIP'}`, 20, 57);
+        doc.text(`Date: ${data.formattedDate || new Date().toLocaleString()}`, 20, 64);
+        doc.text(`Compliance: ${data.compliance || '0%'}`, 20, 71);
+        
+        // Compliance Stats
+        doc.setFillColor(30, 30, 40);
+        doc.rect(20, 80, 170, 40, 'F');
+        
+        doc.setFontSize(12);
+        doc.setTextColor(primary[0], primary[1], primary[2]);
+        doc.text('COMPLIANCE SUMMARY', 105, 90, { align: 'center' });
+        
+        doc.setFontSize(9);
+        doc.setTextColor(255, 255, 255);
+        doc.text(`Total Controls: ${data.totalControls || '0'}`, 30, 100);
+        doc.text(`Compliant: ${data.yes || '0'}`, 30, 107);
+        doc.text(`Non-Compliant: ${data.no || '0'}`, 30, 114);
+        doc.text(`Partial: ${data.partial || '0'}`, 90, 100);
+        doc.text(`N/A: ${data.na || '0'}`, 90, 107);
+        
+        // Threat Stats
+        doc.setFillColor(30, 30, 40);
+        doc.rect(20, 125, 170, 30, 'F');
+        
+        doc.setFontSize(10);
+        doc.setTextColor(secondary[0], secondary[1], secondary[2]);
+        doc.text('THREAT LANDSCAPE', 105, 135, { align: 'center' });
+        
+        doc.setFontSize(9);
+        doc.setTextColor(danger[0], danger[1], danger[2]);
+        doc.text(`Critical: ${data.critical || '0'}`, 40, 145);
+        doc.setTextColor(255, 107, 0);
+        doc.text(`High: ${data.high || '0'}`, 80, 145);
+        doc.setTextColor(warning[0], warning[1], warning[2]);
+        doc.text(`Medium: ${data.medium || '0'}`, 120, 145);
+        doc.setTextColor(success[0], success[1], success[2]);
+        doc.text(`Low: ${data.low || '0'}`, 160, 145);
+        
+        // Footer
+        doc.setFontSize(7);
+        doc.setTextColor(150, 150, 150);
+        doc.text('CRITICAL INFRASTRUCTURE SECURITY CENTER - 24/7 MONITORING', 105, 280, { align: 'center' });
+        
+        doc.save(`CI-Report-${new Date().toISOString().split('T')[0]}.pdf`);
+        
+    } catch (error) {
+        console.error('PDF download error:', error);
+        alert('PDF yüklənərkən xəta baş verdi. Konsolu yoxlayın.');
+    }
+}
+
 </script>
 </body>
 </html>
-
